@@ -10,22 +10,22 @@ class Controller:
         self.game_view = game_view
 
     def chooseLanguage(self):
-        inputs: list = input(
+        inputs: str = input(
             "Please choose your language preference(Chinese or English), and color (Green or Blue): ")
 
-        if inputs[0] == "chinese":
+        if inputs == "chinese":
             pass
 
-        elif inputs[0] == "english":
+        elif inputs == "english":
             pass
 
     def chooseSide(self):
-        inputs: list = input("Please choose your preferred side: ")
+        inputs: str = input("Please choose your preferred side: ")
 
-        if inputs[0] == "down":
+        if inputs == "down":
             pass
 
-        elif inputs[0] == "up":
+        elif inputs == "up":
             pass
 
     def executeInput(self, turnFlag):
@@ -66,7 +66,7 @@ class Controller:
     def ifEnd():
         pass
 
-    def whichTurn(turnFlag):
+    def whichTurn(turnFlag: int):
         if (turnFlag == 0):
             pass
         else:
