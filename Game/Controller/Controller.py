@@ -1,5 +1,5 @@
-from Model import Model
-from View import View
+from Game.Model import Model
+from Game.View import View
 import time
 
 

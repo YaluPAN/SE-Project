@@ -1,6 +1,6 @@
 import sys
 import os
-from Model import Model
+from Game.Model import Model
 
 
 class View():

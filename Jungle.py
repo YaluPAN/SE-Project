@@ -1,8 +1,8 @@
 import os
 import sys
-from View import View
-from Model import Model
-from Controller import Controller
+from Game.View import View
+from Game.Model import Model
+from Game.Controller import Controller
 
 
 class Jungle:
