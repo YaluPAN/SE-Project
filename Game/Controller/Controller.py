@@ -1,3 +1,5 @@
+import sys
+
 from Game.Model import Players as player
 import Game.Model.Model as model
 from Game.View import View
@@ -31,7 +33,7 @@ class Controller:
         riverpos: list = [(x, y) for x in [1, 2, 4, 5] for y in range(3, 6)]
         trappos: list = [(2, 0), (3, 1), (4, 0), (2, 8), (3, 7), (4, 8)]
         denpos: list = [(3, 0), (3, 8)]
-        if inputs == "down":
+        if inputs == "down":  # {"down" : Player1}
             receiver[0] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[0:3], denPos=denpos[0])
             receiver[1] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[3:6], denPos=denpos[1])
         elif inputs == "up":
@@ -39,18 +41,24 @@ class Controller:
             receiver[0] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[3:6], denPos=denpos[1])
         return receiver
 
-    def executeInput(self, turnFlag):
-
+    def executeInput(self, turnFlag: int):
+        self.gamer: player
+        if not turnFlag:
+            ...
+        else:
+            ...
         inputs: list = input(
             "Please input your commands: ").split()
 
         if inputs[0] == "move":
-            self.checkMove(turnFlag)
-            pass
+            while not self.checkMove(inputs[1:]):
+                inputs = input("Wrong input, please input again: ").split()
+            if not self.Undo(turnFlag):
+                # chess.move?
+                with open(r"./History.txt", "w") as fp:
+                    fp.write(" ".join(inputs))
         elif inputs[0] == "help":
             self.game_view.printHelp()
-        elif inputs[0].lower() == "undo":
-            self.Undo()
         elif inputs[0].lower() == "defeat":
             self.AdmitDefeat()
         elif inputs[0].lower() == "exit":
@@ -59,23 +67,57 @@ class Controller:
         else:
             Exception("Input wrong, system will stop")
 
-    def checkMove(self, turnFlag):
+    def checkMove(self, cmd: list) -> bool:
+        val: tuple = self.gamer.position
+        if cmd[0].lower() == "l":
+            if val[0] - int(cmd[1]) < 0: return False
+        elif cmd[0].lower() == "r":
+            if val[0] + int(cmd[1]) > 6: return False
+        elif cmd[0].lower() == "down":
+            if val[1] - int(cmd[1]) < 0: return False
+        elif cmd[0].lower() == "up":
+            if val[1] + int(cmd[1]) > 8: return False
+        return True
 
+    def getHelp(self):
+        """do we still need this?"""
+        pass
+
+    def Undo(self, turnFlag):
+        if self.players.undoNum > 3: return False
+        undo = input("do you wanna undo your option?")
+        if undo.lower() in ["yes", "y"]:
+            print("for player ", 2 - turnFlag, " do you agree to allow your opponent undo his/her optional?")
+            permission = input().lower()
+            if permission in ["no", "n"]:
+                print("you are not allowed to do this, player ", turnFlag + 1)
+            elif permission in ["yes", "y"]:
+                self.players.undoNum += 1
+                self.executeInput(turnFlag)
+                return True
+        return False
+
+    def finalPrint(self):
         ...
 
-    def getHelp():
+    def AdmitDefeat(self, turnFlag: int):
+        if input("you will admit you are defeated by your opponent, pls confirm again: ").lower() in ["y", "yes"]:
+            print("player ", 2-turnFlag, " win this game! ")
+            self.finalPrint()
         pass
 
-    def Undo():
-        pass
+    def Exit(self):
+        print("""
+        Be aware that the whole system will immediately shut down and stopping recording, \n
+        Game wont record your current status or any history except those has been writen in history.txt
+        """)
+        if input("You sure you wanna exit?").lower() in ["y", "yes"]:
+            print("Have a good day, hope meet you next time.")
+            sys.exit(0)
+        return
 
-    def AdmitDefeat():
-        pass
-
-    def Exit():
-        pass
-
-    def ifEnd():
+    def ifEnd(self):
+        
         pass
 
     def whichTurn(turnFlag: int):
@@ -84,7 +126,7 @@ class Controller:
         else:
             pass
 
-    def time_spire():
+    def time_spire(self):
         available_second = 60
         for i in range(1, available_second):
             print('you have %d seconds' % (available_second - i))
