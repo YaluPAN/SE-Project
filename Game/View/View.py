@@ -5,6 +5,14 @@ from Model import Model
 import Chess
 
 class View():
+    """
+    initialization for object of View class.
+    This stores the string of default chessboard consists of characters.
+    substrings '[xx]' represents the location on board (e.g. '[64]' represents location = (6,4)).
+    Traps and nests are marked by texts, and two river pools are marked by slashes.
+    
+    strings representing each animal chess and vacant places are stored for generating the chessboard according to players' status.
+    """
     def __init__(self):
         self.lion_str = "LION"
         self.wolf_str = "WOLF"
@@ -46,13 +54,17 @@ class View():
         |________|________|________|________|________|________|________|
 
         """
-
+    #welcome words！
     def printWelcomePage():
         print("        WELCOME TO JUNGLE GAME DEVELOPED BY GRP3        ")
 
     def askPreference():
         print()
-#
+    '''
+    generate the current board regarding to two players' status as the parameter.
+    each chess's location will be checked and replace() function will be called to replace the '[xx]' string on copied default chessboard with the chess string.
+    finally, relpace all the still-vacant places with vac_str '    ' and print it.
+    '''
     def printChessboard(player1: Model.Players, player2: Model.Players):
         _gameboard = self.gameboard
         for animal_i in player1:
@@ -71,13 +83,16 @@ class View():
                 _gameboard.replace(repl_str, self.lion_str)
             
         print(_gameboard)
-
+    
+    '''
+    handle help request. classify the user's questions for the rules by requesting new inputs and print related instructions.
+    '''
     def printHelp():
         print()
-
+    
     def printHints():
         print()
-
+    
     def printTiming():
         print()
 

@@ -7,11 +7,13 @@ import time
 
 
 class Controller:
-
+    
+    #initialization for objects of controller class
     def __init__(self, game_model: model.Model, game_view: View):
         self.game_model = game_model
         self.game_view = game_view
-
+    
+    #choose the language for the game,this will be called by Jungle.py during the execution of the game
     def chooseLanguage(self):
         inputs: str = input(
             "Please choose your language preference(Chinese or English), and color (Green or Blue): ")
@@ -40,7 +42,11 @@ class Controller:
             receiver[1] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[0:3], denPos=denpos[0])
             receiver[0] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[3:6], denPos=denpos[1])
         return receiver
-
+    '''processor for commands (user input). A boolean flag of a player's turn will be received to judge whether it was the player's round.
+    if move is selected, the function will check whether that was a legal move calling checkMove() and process the command;
+    if help is selected, printHelp() from view.py will be called, printing out the rules and instructions for the game;
+    if defeat is selected, admitDefeat() will be called, ending the game as the played claimed;
+    if exit is selected, print and call Exit() to exit Jungle.py.'''
     def executeInput(self, turnFlag: int):
         self.gamer: player
         if not turnFlag:
@@ -67,7 +73,11 @@ class Controller:
             print("Bye~")
         else:
             Exception("Input wrong, system will stop")
-
+    '''
+    checkMove() checks whether a move of the chess has exceeded the border of the chessboard.
+    the parameter cmd stores player's move command with 4 possible directions: l, r, down, up.
+    The size of the board is 9*7 thus the vertical range should be [0, 8] and the horizontal should be [0, 6].
+    '''
     def checkMove(self, cmd: list) -> bool:
         # add check jump river
         val: tuple = self.gamer.position
@@ -84,10 +94,16 @@ class Controller:
     def getHelp(self):
         """do we still need this?"""
         pass
-
+    
+   
+    '''
+    Function handling undo processes.
+    If an undo request is confirmed by input "y", check the number of previous undos. If already done 3 times then the request will not be granted.
+    If less than 3 times, ask for the other player's permission. If agreed, withdraw the player's move.
+    '''
     def Undo(self, turnFlag):
         if self.players.undoNum > 3: return False
-        undo = input("do you wanna undo your option?")
+        undo = input("do you want to undo your option?")
         if undo.lower() in ["yes", "y"]:
             print("for player ", 2 - turnFlag, " do you agree to allow your opponent undo his/her optional?")
             permission = input().lower()
@@ -101,33 +117,45 @@ class Controller:
 
     def finalPrint(self):
         ...
-
+        
+        
+    '''
+    function to handle the user's surrender request.
+    '''
     def AdmitDefeat(self, turnFlag: int):
-        if input("you will admit you are defeated by your opponent, pls confirm again: ").lower() in ["y", "yes"]:
+        if input("you will admit your defeat and surrender to your opponent, please confirm again: ").lower() in ["y", "yes"]:
             print("player ", 2-turnFlag, " win this game! ")
             self.finalPrint()
         pass
-
+    
+    
+    '''
+    Function to exit the game after having the players' final confirmation.
+    '''
     def Exit(self):
         print("""
+        WARNING!!!
         Be aware that the whole system will immediately shut down and stopping recording, \n
-        Game wont record your current status or any history except those has been writen in history.txt
+        Game won't reserve your current status or any records except those has been written in history.txt file.
         """)
-        if input("You sure you wanna exit?").lower() in ["y", "yes"]:
-            print("Have a good day, hope meet you next time.")
+        if input("Confirm exit?").lower() in ["y", "yes"]:
+            print("Have a good day and see you next time! :)")
             sys.exit(0)
         return
 
     def ifEnd(self):
 
         pass
-
+    
     def whichTurn(turnFlag: int):
         if (turnFlag == 0):
             pass
         else:
             pass
 
+    '''
+    Count the time for current user's round with the limit of 60 seconds.
+    '''
     def time_spire(self):
         available_second = 60
         for i in range(1, available_second):
