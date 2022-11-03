@@ -53,6 +53,7 @@ class Controller:
         if inputs[0] == "move":
             while not self.checkMove(inputs[1:]):
                 inputs = input("Wrong input, please input again: ").split()
+
             if not self.Undo(turnFlag):
                 # chess.move?
                 with open(r"./History.txt", "w") as fp:
@@ -68,6 +69,7 @@ class Controller:
             Exception("Input wrong, system will stop")
 
     def checkMove(self, cmd: list) -> bool:
+        # add check jump river
         val: tuple = self.gamer.position
         if cmd[0].lower() == "l":
             if val[0] - int(cmd[1]) < 0: return False
@@ -117,7 +119,7 @@ class Controller:
         return
 
     def ifEnd(self):
-        
+
         pass
 
     def whichTurn(turnFlag: int):
