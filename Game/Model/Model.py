@@ -312,7 +312,7 @@ class Model():
         '''
         pass
 
-    def if_position_has_lower_rank_enemy_except_Rat(moving_animal: Animals, position: tuple) -> bool:
+    def if_position_has_lower_rank_enemy_except_Rat(self, moving_animal: Animals, position: tuple) -> bool:
         '''
         1. Purpose: This function is only used when moving_animal is Elephant. To check if the new position is occupied by a lower rank enemies except Rat. 
         2. Function parameter: "moving_animal" is passed from if_new_position_has_enemy_that_can_be_eaten from Controller, "position" is passed from get_estimated_new_position()

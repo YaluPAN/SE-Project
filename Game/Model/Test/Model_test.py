@@ -1,6 +1,10 @@
 import unittest
 import sys
+import pathlib
 
+path = str(pathlib.Path(__file__).parent.resolve())
+path = "\\".join(path.split("\\")[:-2])
+sys.path.append(path)
 import Game.Model.Model as md
 from unittest.mock import MagicMock
 from unittest.mock import Mock
@@ -11,7 +15,7 @@ class ChessboardTest(unittest.TestCase):
     def setUp(self) -> None:
         self.md = md.Model()
 
-    def test_ifCanmove(self):
+    def test_ifCanMove(self):
         """
         There are totally 5 situations when an Animal Chess is moved:
             a)The animal's next step in out of chessboard range
@@ -32,7 +36,7 @@ class ChessboardTest(unittest.TestCase):
                 i) will be tested in test_if_new_position_has_enemy_that_can_be_eaten()
                 i) rat in river
                     1) rat swim in river
-                    2) rat in river gonna capture another river
+                    2) rat in river going to capture another river
 
                 ii) a lion, tiger will jump over a rat
                     1) they cannot jump over the river when a rat in the same river
@@ -41,7 +45,7 @@ class ChessboardTest(unittest.TestCase):
         """
         mock = Mock()
 
-        # test for a)
+        # test for a
         rat1: md.Animals = self.md.downAnimalList[0]
         self.md.get_estimated_new_position = MagicMock()
         self.md.if_move_out_of_range = MagicMock()
@@ -51,10 +55,22 @@ class ChessboardTest(unittest.TestCase):
         self.md.if_move_out_of_range.assert_called_with((7, 2))
 
         # test for b-i-1  get_estimated_new_position will be executed every time
-        # so here we wont test it
+        # so here we won't test it
         rat1.position = (1, 3)
-
         self.assertEqual(self.md.ifCanMove(rat1, "left")[0], True)
+
+        # test for (False, Hint3)
+        cat1: md.Animals = self.md.downAnimalList[1]
+        rat2: md.Animals = self.md.upAnimalList[0]
+        rat2.position, cat1.position = (3, 6), (3, 5)
+        self.assertEqual(self.md.ifCanMove(rat2, "down")[0], False)
+
+        # test for (False, Hint4)
+        cat1.position, rat1.position = (1, 1), (3, 5)
+        self.assertEqual(self.md.ifCanMove(rat2, "down"), False)
+
+        rat1.position = (6, 2)
+        self.assertEqual(self.md.ifCanMove(rat2, "down"), True)
 
         # test for b-i-2
         wolf1 = self.md.upAnimalList[3]
@@ -87,18 +103,12 @@ class ChessboardTest(unittest.TestCase):
 
     def test_if_new_position_has_enemy_that_can_be_eaten(self) -> None:
         """
-        1)in Land
-                1.1 All animals except Rat(1), can eat enemy that have the same/lower rank
-                1.2 Rat(1) can eat enemy Elephant(8) and Rat(1)
-                    The case that a Rat move from the water to attack enemy Elephant/Rat is NOT allowed. This case is already checked by ifCanMove() before this func.
-            2)in River
-                only Rat(1) will in River. In this case, it can eat enemy Rat(1).
-            3)in Trap
-                All animal in traps can eat any enemy pieces
-            4)in Den
-                the side of the animal will win if the animal move to opponent's side.
-                Because in this case, the animal will not care eating enemy anymore
-        :return:
+        1)in Land 1.1 All animals except Rat(1), can eat enemy that have the same/lower rank 1.2 Rat(1) can eat enemy
+        Elephant(8) and Rat(1) The case that a Rat move from the water to attack enemy Elephant/Rat is NOT allowed.
+        This case is already checked by ifCanMove() before this func. 2)in River only Rat(1) will in River. In this
+        case, it can eat enemy Rat(1). 3)in Trap All animal in traps can eat any enemy pieces 4)in Den the side of
+        the animal will win if the animal move to opponent's side. Because in this case, the animal will not care
+        eating enemy anymore :return:
         """
         rat1, elephant = self.md.upAnimalList[0], self.md.downAnimalList[7]
         # a rat chess process a normal push from (6,2) to (6,3)
@@ -107,7 +117,7 @@ class ChessboardTest(unittest.TestCase):
         wolf1 = self.md.upAnimalList[3]
         wolf1.position = (0, 3)
         elephant.position = (0, 3)
-        # an elephant chess is gonna eliminate the opponent wolf chess
+        # an elephant chess is going to eliminate the opponent wolf chess
         self.assertEqual(self.md.if_new_position_has_enemy_that_can_be_eaten(elephant), True)
 
         rat2 = self.md.downAnimalList[0]
@@ -131,7 +141,8 @@ class ChessboardTest(unittest.TestCase):
     def test_move(self) -> None:
         wolf1, rat1, leopard1 = self.md.downAnimalList[3], self.md.upAnimalList[0], self.md.downAnimalList[4]
         wolf1.move("up")
-        self.assertEqual(wolf1.getPosition(), (2, 2))  # river is in front of downside wolf, so its position wont change
+        self.assertEqual(wolf1.getPosition(), (2, 2))  # river is in front of downside wolf, so its position won't
+        # change
         self.assertEqual(rat1.getPosition(), (0, 6))  # use unmoved chess as reference
         rat1.move("down")
         self.assertEqual(rat1.getPosition(), (0, 5))
@@ -152,7 +163,7 @@ class ChessboardTest(unittest.TestCase):
         except AttributeError:
             pass
 
-        self.assertEqual(self.md.jumpOver(lion1, "left"), (3,3))  # here, no rat at river!
+        self.assertEqual(self.md.jumpOver(lion1, "left"), (3, 3))  # here, no rat at river!
         tiger1.position = (1, 6)
         self.assertEqual(self.md.jumpOver(tiger1, "down"), (1, 2))
         self.pointBackOri()
@@ -173,7 +184,7 @@ class ChessboardTest(unittest.TestCase):
     def test_get_estimated_new_position(self) -> None:
         """
         because this is only the first step to check the validity of the movement
-        so for this question it wont care about whether the result contain negative
+        so for this question it won't care about whether the result contain negative
         number, result is correct or not.
         :return: None
         """
@@ -209,7 +220,7 @@ class ChessboardTest(unittest.TestCase):
         3. a random point on the land of board
         4. a position one step near the river
         in fact, before calling this method, we have already filtered out the situation
-        that chess will out of board, so this function wont check it
+        that chess will out of board, so this function won't check it
         :return:
         """
         self.assertEqual(self.md.if_next_step_in_land((2, 5)), True)
@@ -245,12 +256,12 @@ class ChessboardTest(unittest.TestCase):
         """
         1. the position stands a same rank enemy
         2. the position with a different rank enemy,
-        3. a rat is gonna jump out of river but there is an enemy rat on the way
-        4. a rat gonna capture another rat in the river
+        3. a rat is going to jump out of river but there is an enemy rat on the way
+        4. a rat going to capture another rat in the river
         :return:
         ps: the calling of if_position_has_same_side_animal is before this function, so
-        the only possible left here must be an enemy chess (function input require a animal
-        class, cannot input a empty position in)
+        the only possible left here must be an enemy chess (function input require an animal
+        class, cannot input an empty position in)
         """
         dog1: md.Animals = self.md.upAnimalList[2]  # upside dog
         dog2: md.Animals = self.md.downAnimalList[2]  # downside dog
@@ -301,7 +312,7 @@ class ChessboardTest(unittest.TestCase):
 
     def test_if_position_has_higher_rank_enemy(self) -> None:
         """
-        1. a rat gonna jump out of water
+        1. a rat going to jump out of water
         2. a square that already occupied by enemies that have a higher rank
         :return:
         in our system, this function is applied to situations without elephant involved
@@ -332,10 +343,10 @@ class ChessboardTest(unittest.TestCase):
 
     def test_if_position_has_enemy_Elephant(self) -> None:
         """
-        system will iterate through two chess list two match with two elephents' position
+        system will iterate through two chess list two match with two elephants' position
         then compare with current moving chess's next step location
-        1. there isnt an elephant (empty position)
-        2. there isnt an elephant, but with a same side elephant
+        1. there isn't an elephant (empty position)
+        2. there isn't an elephant, but with a same side elephant
         2. there is an enemy elephant
         :return:
         """

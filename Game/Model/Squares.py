@@ -4,7 +4,7 @@ import typing
 from typing import List, Type, TypeVar
 
 
-class Squares():
+class Squares:
     '''
     The class "Squares" is designed to represent static squares in a chessboard, including den squares, traps squares and river squares.
     '''
@@ -43,7 +43,8 @@ class Animals(Squares):
     The important attribute of the animals are: name, rank, position, and status(indicates they're live or dead)
     '''
 
-    def __init__(self, name, rank, position: tuple,  status):
+    def __init__(self, name, rank, position: tuple, status):
+        super().__init__()
         self.name = name
         self.rank = rank
         self.position = position
