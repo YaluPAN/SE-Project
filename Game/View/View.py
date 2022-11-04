@@ -100,22 +100,59 @@ class View():
     def printHelp():
         print()
     
+    
+    '''
+    This function displays different kinds of hints according to different invalid movements made by players. 
+    
+    return: None
+    '''
     def printHints():
         print()
     
+    '''
+    This function displays a real-time countdown second during a player’s movement decision period. 
+    The game is designed to be time-limited, as this enhances player focus and improves the sense of involvement in the game.
+
+    return: None
+
+    '''
     def printTiming():
         print()
-
+    
+    '''
+    This function displays a player’s chess move hist
+    ory, including which chess is chosen to move, how it moves,s and its captured results (if it h
+    as). The function is used once the player wants to review his/her movement strategy during the 
+    game.
+    return: None
+    '''
     def printMoveHistory():
         print()
-
+    
+    '''
+    This function displays the current round number in each round of the game. 
+    It’s an additional function that aims to provide a better view of chess competitions.
+    
+    return: None
+    '''
     def printCurrentRoundInfo():
         print()
-
+   
+    '''
+    This function displays a list of captured results in the current round when a player is making a movement decisio
+    n. It provides a review so that players can know what his/her has captured instead of spending time observing the chessboard.
+    
+    return: None
+    '''
     def printCapturedResult():
         capturedResult = Model.getCapturedResult()
         print(capturedResult)
+    
+    '''
+    This function displays the game result about which player wins the game at the end of the game. 
 
+    return: None
+    '''
     def printGameResult():
         print()
 
