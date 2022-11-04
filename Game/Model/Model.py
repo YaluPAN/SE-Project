@@ -14,7 +14,7 @@ class Model():
     '''
     # initialize a new Chessboard
 
-    def _init_(self, downAnimalList: list, upAnimalList: list, den_position: list, trap_position: list, river_position: list):
+    def __init__(self, downAnimalList: list, upAnimalList: list, den_position: list, trap_position: list, river_position: list):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
         downside_Rat = Animals("downside_Rat", 1, (6, 2), False, True)
         downside_Cat = Animals("downside_Cat", 2, (1, 1), False, True)
@@ -52,7 +52,7 @@ class Model():
         self.trap_position = trap_position
         self.river_position = river_position
 
-    def ifCanMove(self, moving_animal: Animals, direction) -> tuple(bool, str):
+    def ifCanMove(self, moving_animal: Animals, direction) -> tuple:
         '''
         1. Purpose: This function is used to check whether the animal can move to next step. 
         2. Function parameters: "moving_animal" and "direction" are parameters that passed from Controller
@@ -329,3 +329,6 @@ class Model():
         4. How to achieve: by iterating all that side of river squares positions except rat's in a chessboard, and check whether the rat positions are same as one of them
         '''
         pass
+
+if __name__ == "__main__":
+    print("OK")

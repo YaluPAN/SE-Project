@@ -43,7 +43,7 @@ class Animals(Squares):
     The important attribute of the animals are: name, rank, position, and status(indicates they're live or dead)
     '''
 
-    def _init_(self, name, rank, position: tuple(),  status):
+    def __init__(self, name, rank, position: tuple,  status):
         self.name = name
         self.rank = rank
         self.position = position
@@ -151,3 +151,6 @@ class Animals(Squares):
 
     def jumpOverRight(self) -> None:
         pass
+
+if __name__ == "__main__":
+    print("everything OK")
