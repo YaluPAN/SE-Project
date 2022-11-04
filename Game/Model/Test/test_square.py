@@ -3,8 +3,12 @@ from unittest import mock
 import sys
 sys.path.append("../")
 sys.path.append("../..")
-sys.path.append(r"C:\Users\lenovo\Desktop\SE-Project-main\Game")
-import Model.Squares as sq
+
+import pathlib
+path = str(pathlib.Path(__file__).parent.resolve())
+path = "\\".join(path.split("\\")[:-2])
+sys.path.append(path)
+import Game.Model.Squares as sq
 
 class ChessTestCase(unittest.TestCase):
     def testSquares(self):
