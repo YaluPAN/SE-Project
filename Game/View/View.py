@@ -54,7 +54,11 @@ class View():
         |________|________|________|________|________|________|________|
 
         """
-    #welcome words！
+    '''
+    This function displays a welcome message in the interface before the game sta
+    ts. The welcome message includes a welcome sentence, a system brief introducti
+    on, a game rules description, and a brief user manual. 
+    '''
     def printWelcomePage():
         print("        WELCOME TO JUNGLE GAME DEVELOPED BY GRP3        ")
 
