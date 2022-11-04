@@ -10,8 +10,9 @@ class View():
     This stores the string of default chessboard consists of characters.
     substrings '[xx]' represents the location on board (e.g. '[64]' represents location = (6,4)).
     Traps and nests are marked by texts, and two river pools are marked by slashes.
-    
     strings representing each animal chess and vacant places are stored for generating the chessboard according to players' status.
+    
+    return: None
     """
     def __init__(self):
         self.lion_str = "LION"
@@ -58,6 +59,8 @@ class View():
     This function displays a welcome message in the interface before the game sta
     ts. The welcome message includes a welcome sentence, a system brief introducti
     on, a game rules description, and a brief user manual. 
+    
+    return: None
     '''
     def printWelcomePage():
         print("        WELCOME TO JUNGLE GAME DEVELOPED BY GRP3        ")
@@ -68,6 +71,8 @@ class View():
     generate the current board regarding to two players' status as the parameter.
     each chess's location will be checked and replace() function will be called to replace the '[xx]' string on copied default chessboard with the chess string.
     finally, relpace all the still-vacant places with vac_str '    ' and print it.
+    
+    return: None
     '''
     def printChessboard(player1: Model.Players, player2: Model.Players):
         _gameboard = self.gameboard
@@ -90,6 +95,7 @@ class View():
     
     '''
     handle help request. classify the user's questions for the rules by requesting new inputs and print related instructions.
+    return: None
     '''
     def printHelp():
         print()
