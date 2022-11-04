@@ -8,12 +8,18 @@ import time
 
 class Controller:
     
-    #initialization for objects of controller class
+    '''
+    initialization for objects of controller class
+    return: None
+    '''
     def __init__(self, game_model: model.Model, game_view: View):
         self.game_model = game_model
         self.game_view = game_view
     
-    #choose the language for the game,this will be called by Jungle.py during the execution of the game
+    '''
+    choose the language for the game,this will be called by Jungle.py during the execution of the game
+    return: None
+    '''
     def chooseLanguage(self):
         inputs: str = input(
             "Please choose your language preference(Chinese or English), and color (Green or Blue): ")
@@ -22,14 +28,13 @@ class Controller:
 
         elif inputs == "english":
             pass
-
-    def chooseSide(self) -> list:
-        """
-        so after choosing the side, two player list should with a signature to be pointed and able
-        to be recognized.
+       
+        '''
+        After choosing the side, two player list should with a signature to be pointed and able to be recognized.
         Major related function should get from Model.Model
         :return: None
-        """
+        '''
+    def chooseSide(self) -> list:
         inputs: str = input("Please choose your preferred side: ")  # how is choosing?
         receiver: list = model.Model.getChessboard()
         riverpos: list = [(x, y) for x in [1, 2, 4, 5] for y in range(3, 6)]
@@ -42,11 +47,14 @@ class Controller:
             receiver[1] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[0:3], denPos=denpos[0])
             receiver[0] = player.Players(chessList=[], riverPos=riverpos, trapPos=trappos[3:6], denPos=denpos[1])
         return receiver
-    '''processor for commands (user input). A boolean flag of a player's turn will be received to judge whether it was the player's round.
+    '''
+    processor for commands (user input). A boolean flag of a player's turn will be received to judge whether it was the player's round.
     if move is selected, the function will check whether that was a legal move calling checkMove() and process the command;
     if help is selected, printHelp() from view.py will be called, printing out the rules and instructions for the game;
     if defeat is selected, admitDefeat() will be called, ending the game as the played claimed;
-    if exit is selected, print and call Exit() to exit Jungle.py.'''
+    if exit is selected, print and call Exit() to exit Jungle.py.
+    return: None
+    '''
     def executeInput(self, turnFlag: int):
         self.gamer: player
         if not turnFlag:
@@ -77,6 +85,7 @@ class Controller:
     checkMove() checks whether a move of the chess has exceeded the border of the chessboard.
     the parameter cmd stores player's move command with 4 possible directions: l, r, down, up.
     The size of the board is 9*7 thus the vertical range should be [0, 8] and the horizontal should be [0, 6].
+    return: A boolean variable identifying the move is legal or not
     '''
     def checkMove(self, cmd: list) -> bool:
         # add check jump river
@@ -100,6 +109,7 @@ class Controller:
     Function handling undo processes.
     If an undo request is confirmed by input "y", check the number of previous undos. If already done 3 times then the request will not be granted.
     If less than 3 times, ask for the other player's permission. If agreed, withdraw the player's move.
+    return: a boolean variable for checking the an withdrawal was made.
     '''
     def Undo(self, turnFlag):
         if self.players.undoNum > 3: return False
@@ -121,6 +131,7 @@ class Controller:
         
     '''
     function to handle the user's surrender request.
+    return: a boolean variable.
     '''
     def AdmitDefeat(self, turnFlag: int):
         if input("you will admit your defeat and surrender to your opponent, please confirm again: ").lower() in ["y", "yes"]:
@@ -131,6 +142,7 @@ class Controller:
     
     '''
     Function to exit the game after having the players' final confirmation.
+    return: None
     '''
     def Exit(self):
         print("""
@@ -142,7 +154,9 @@ class Controller:
             print("Have a good day and see you next time! :)")
             sys.exit(0)
         return
-
+    '''
+    return: a boolean variable judging whether the game ends.
+    '''
     def ifEnd(self):
 
         pass
@@ -155,6 +169,7 @@ class Controller:
 
     '''
     Count the time for current user's round with the limit of 60 seconds.
+    return type: None
     '''
     def time_spire(self):
         available_second = 60
