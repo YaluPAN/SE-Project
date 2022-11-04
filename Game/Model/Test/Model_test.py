@@ -1,12 +1,9 @@
 import unittest
 import sys
 
-sys.path.append("../")
-from Game.Model import Model as md
+import Game.Model.Model as md
 from unittest.mock import MagicMock
 from unittest.mock import Mock
-from Game.Controller import Controller as ct
-from Game.Model import Squares as sq
 
 
 class ChessboardTest(unittest.TestCase):
@@ -48,7 +45,7 @@ class ChessboardTest(unittest.TestCase):
         rat1: md.Animals = self.md.downAnimalList[0]
         self.md.get_estimated_new_position = MagicMock()
         self.md.if_move_out_of_range = MagicMock()
-        self.assertEqual(self.md.ifCanMove(rat1, "right"), (False, self.md.Hint1))
+        self.assertEqual(self.md.ifCanMove(rat1, "right")[0], False)
         # check self.md.get_estimated_new_position's call value
         self.md.get_estimated_new_position.assert_called_with(rat1, "right")
         self.md.if_move_out_of_range.assert_called_with((7, 2))
@@ -57,35 +54,35 @@ class ChessboardTest(unittest.TestCase):
         # so here we wont test it
         rat1.position = (1, 3)
 
-        self.assertEqual(self.md.ifCanMove(rat1, "left"), (True,))
+        self.assertEqual(self.md.ifCanMove(rat1, "left")[0], True)
 
         # test for b-i-2
         wolf1 = self.md.upAnimalList[3]
         wolf1.position = (0, 3)
 
-        self.assertEqual(self.md.ifCanMove(rat1, "left"), (False, self.md.Hint2))
+        self.assertEqual(self.md.ifCanMove(rat1, "left")[0], False)
 
         # test for b-iii
         wolf1.position, rat1.position = (6, 3), (6, 2)
-        self.assertEqual(self.md.ifCanMove(rat1, "up"), (False, self.md.Hint3))
+        self.assertEqual(self.md.ifCanMove(rat1, "up")[0], False)
 
         elephant = self.md.upAnimalList[7]
         elephant.position = (6, 3)
-        self.assertEqual(self.md.ifCanMove(elephant, "down"), (False, self.md.Hint4))
+        self.assertEqual(self.md.ifCanMove(elephant, "down")[0], False)
 
         # test for C-ii-1
         dog1: md.Animals = self.md.downAnimalList[2]
         dog1.position = (5, 2)
-        self.assertEqual(self.md.ifCanMove(dog1, "up"), (False, self.md.Hint5))
+        self.assertEqual(self.md.ifCanMove(dog1, "up"), False)
 
         # test for C-iii
         lion1: md.Animals = self.md.upAnimalList[6]
         lion1.position, rat1.position = (2, 6), (2, 5)
-        self.assertEqual(self.md.ifCanMove(lion1, "down"), (False, self.md.Hint6))
+        self.assertEqual(self.md.ifCanMove(lion1, "down"), False)
 
-        # test for
+        # test for C-iii
         lion1.position = (0, 8)
-        self.assertEqual(self.md.ifCanMove(lion1, "down"), (True, self.md.Hint7))
+        self.assertEqual(self.md.ifCanMove(lion1, "down"), True)
         self.pointBackOri()
 
     def test_if_new_position_has_enemy_that_can_be_eaten(self) -> None:
@@ -108,7 +105,7 @@ class ChessboardTest(unittest.TestCase):
         self.assertEqual(self.md.if_new_position_has_enemy_that_can_be_eaten(rat1), False)
 
         wolf1 = self.md.upAnimalList[3]
-        wolf1.position(0, 3)
+        wolf1.position = (0, 3)
         elephant.position = (0, 3)
         # an elephant chess is gonna eliminate the opponent wolf chess
         self.assertEqual(self.md.if_new_position_has_enemy_that_can_be_eaten(elephant), True)
@@ -134,13 +131,13 @@ class ChessboardTest(unittest.TestCase):
     def test_move(self) -> None:
         wolf1, rat1, leopard1 = self.md.downAnimalList[3], self.md.upAnimalList[0], self.md.downAnimalList[4]
         wolf1.move("up")
-        self.assertEqual(wolf1.getPosition, (2, 2))  # river is in front of downside wolf, so its position wont change
-        self.assertEqual(rat1.getPosition, (0, 6))  # use unmoved chess as reference
+        self.assertEqual(wolf1.getPosition(), (2, 2))  # river is in front of downside wolf, so its position wont change
+        self.assertEqual(rat1.getPosition(), (0, 6))  # use unmoved chess as reference
         rat1.move("down")
-        self.assertEqual(rat1.getPosition, (0, 5))
-        self.assertEqual(leopard1.getPosition, (4, 2))
+        self.assertEqual(rat1.getPosition(), (0, 5))
+        self.assertEqual(leopard1.getPosition(), (4, 2))
         leopard1.move("left")
-        self.assertEqual(leopard1.getPosition, (3, 2))
+        self.assertEqual(leopard1.getPosition(), (3, 2))
         self.pointBackOri()
 
     def test_jumpover(self) -> None:

@@ -1,5 +1,5 @@
 
-from Squares import Squares, Animals
+from Game.Model.Squares import Squares, Animals
 
 
 class Model():
@@ -14,26 +14,26 @@ class Model():
     '''
     # initialize a new Chessboard
 
-    def __init__(self, downAnimalList: list, upAnimalList: list, den_position: list, trap_position: list, river_position: list):
+    def __init__(self):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
-        downside_Rat = Animals("downside_Rat", 1, (6, 2), False, True)
-        downside_Cat = Animals("downside_Cat", 2, (1, 1), False, True)
-        downside_Dog = Animals("downside_Dog", 3, (5, 1), False, True)
-        downside_Wolf = Animals("downside_Wolf", 4, (2, 2), False, True)
+        downside_Rat = Animals("downside_Rat", 1, (6, 2), True)
+        downside_Cat = Animals("downside_Cat", 2, (1, 1), True)
+        downside_Dog = Animals("downside_Dog", 3, (5, 1), True)
+        downside_Wolf = Animals("downside_Wolf", 4, (2, 2), True)
         downside_Leopard = Animals("downside_Leopard", 5, (4, 2), True)
-        downside_Tiger = Animals("downside_Tiger", 6, (0, 0), False, True)
-        downside_Lion = Animals("downside_Lion", 7, (6, 0), False, True)
+        downside_Tiger = Animals("downside_Tiger", 6, (0, 0), True)
+        downside_Lion = Animals("downside_Lion", 7, (6, 0), True)
         downside_Elephant = Animals(
-            "downside_Elephant", 8, (0, 2), False, True)
+            "downside_Elephant", 8, (0, 2), True)
 
-        upside_Rat = Animals("upside_Rat", 1, (0, 6), False, True)
-        upside_Cat = Animals("upside_Cat", 2, (5, 7), False, True)
-        upside_Dog = Animals("upside_Dog", 3, (1, 7), False, True)
-        upside_Wolf = Animals("upside_Wolf", 4, (4, 6), False, True)
-        upside_Leopard = Animals("upside_Leopard", 5, (2, 6), False, True)
-        upside_Tiger = Animals("upside_Tiger", 6, (6, 8), False, True)
-        upside_Lion = Animals("upside_Lion", 7, (0, 8), False, True)
-        upside_Elephant = Animals("upside_Elephant", 8, (6, 6), False, True)
+        upside_Rat = Animals("upside_Rat", 1, (0, 6), True)
+        upside_Cat = Animals("upside_Cat", 2, (5, 7), True)
+        upside_Dog = Animals("upside_Dog", 3, (1, 7), True)
+        upside_Wolf = Animals("upside_Wolf", 4, (4, 6), True)
+        upside_Leopard = Animals("upside_Leopard", 5, (2, 6), True)
+        upside_Tiger = Animals("upside_Tiger", 6, (6, 8), True)
+        upside_Lion = Animals("upside_Lion", 7, (0, 8), True)
+        upside_Elephant = Animals("upside_Elephant", 8, (6, 6), True)
 
         downAnimalList = [downside_Rat, downside_Cat, downside_Dog,
                           downside_Wolf, downside_Leopard, downside_Tiger, downside_Lion, downside_Elephant]
@@ -217,7 +217,7 @@ class Model():
         '''
         pass
 
-    def if_move_out_of_range(position: tuple) -> bool:
+    def if_move_out_of_range(self, position: tuple) -> bool:
         ''' 
         1. Purpose: check if the position is out of range of a chessboard
         2. Function parameter: "position" is passed from get_estimated_new_position()
@@ -226,7 +226,7 @@ class Model():
         '''
         pass
 
-    def if_next_step_in_land(new_position: tuple) -> bool:
+    def if_next_step_in_land(self, new_position: tuple) -> bool:
         '''
         1. Purpose: check if the new position is in a land square 
         2. Function parameter: "new_position" is passed from get_estimated_new_position()
@@ -285,7 +285,7 @@ class Model():
         else:
             return self.if_position_has_enemy_Rat(moving_animal, position)
 
-    def if_next_step_in_river(new_position: tuple) -> bool:
+    def if_next_step_in_river(self, new_position: tuple) -> bool:
         '''
         1. Purpose: check if the new position is in a river square 
         2. Function parameter: "new_position" is passed from get_estimated_new_position()
@@ -321,7 +321,7 @@ class Model():
         '''
         pass
 
-    def if_rat_in_that_river(side_of_river: str) -> bool:
+    def if_rat_in_that_river(self, side_of_river: str) -> bool:
         '''
         1. Purpose: This function is to find whether there is a rat on the specific river "side_of_river" 
         2. Function parameter: "side_of_river" is passed from getRiverSide() from Squares.

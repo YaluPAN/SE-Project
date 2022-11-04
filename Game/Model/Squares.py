@@ -9,13 +9,13 @@ class Squares():
     The class "Squares" is designed to represent static squares in a chessboard, including den squares, traps squares and river squares.
     '''
 
-    def _init(self):
+    def __init__(self):
         self.den_position = [(3, 0), (3, 8)]
         self.trap_position = [(2, 0), (4, 0), (3, 1), (2, 8), (3, 7), (4, 8)]
         self.river_position = [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4),
-                               (2, 5), (4, 3), (4, 4), (4, 5)(5, 3), (5, 4), (5, 5)]
+                               (2, 5), (4, 3), (4, 4), (4, 5), (5, 3), (5, 4), (5, 5)]
 
-    def getRiverSide(square_position: tuple) -> str:
+    def getRiverSide(self, square_position: tuple) -> str:
         '''
         1. This function is used to get the river side based on a specific square position. 
         2. Function parameter: "square_position" is passed from get_new_estimated_position() in Model. 
