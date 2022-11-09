@@ -155,12 +155,12 @@ class View():
     The hintList stores all the hints in order, and an integer hintNum is required as parameters to determine which hint to print.
     return: None
     '''
-    def printHints(self, hintNum):
-        hintsList = ["Only rats are allowed to jump to the water square.",
-                 "Opponent rats cannot attack each other unless they are both in the water/on the land.",
-                 "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",
-                 "Rats cannot attack opponents directly if they are in different kinds of squares.",
-                 "Rank of the attacking opponent is higher than your chess",
+    def printHints(self, hintNum):                                                                                  #hintNum:
+        hintsList = ["Only rats are allowed to jump to the water square.",                                          #0
+                 "Opponent rats cannot attack each other unless they are both in the water/on the land.",           #1
+                 "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",                        #2
+                 "Rats cannot attack opponents directly if they are in different kinds of squares.",                #3
+                 "Rank of the attacking opponent is higher than your chess",                                        #4
                  "Chess out of border."]
         print(hintsList[hintNum])
     
