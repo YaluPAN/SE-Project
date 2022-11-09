@@ -14,7 +14,7 @@ class Model():
     '''
     # initialize a new Chessboard
 
-    def __init__(self):
+    def __init__(self, river_position: list):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
         downside_Rat = Animals("downside_Rat", 1, (6, 2), True)
         downside_Cat = Animals("downside_Cat", 2, (1, 1), True)
@@ -94,7 +94,7 @@ class Model():
                 # a. For Rat(1): if its original position is in River, it can't move to a square that already occupied by enemy Elephant(8)(Elephant belonged to any higher rank, case a) or enemy Rat(1), because it will be eaten by enemy Elephant(8) or enemy Rat(1).
                 elif (moving_animal.getRank == '1'):
                     if (self.if_position_has_higher_rank_enemy(moving_animal, new_position)
-                        ):
+                            ):
                         return (False, Hint3)
                     elif (self.if_position_has_same_rank_enemy(moving_animal, new_position)):
                         return (False, Hint4)
@@ -198,7 +198,40 @@ class Model():
         3. Return value: returns an enemy piece object
         4. How to achieve: by iterating positions of all enemy pieces, and find the one which has a same position with moving_animal
         '''
+
+        try:
+            position = moving_animal.getPosition()
+            moving_animal_side = self.get_animal_side(moving_animal)
+            enemy_side = self.get_opposite_side(moving_animal_side)
+            enemy_animals_list = self.get_side_list(enemy_side)
+            for i in enemy_animals_list:
+                if (position == i):
+                    return i
+        except Exception:
+            print(
+                "Error! Can't get same position enemy! Pls check get_same_position_enemy() in Model.py")
+
         pass
+
+    def get_animal_side() -> str:
+        '''
+        Parameter: an Animals Objects
+        Return: "down" or "up", indicates that which side it belongs to 
+        '''
+        animal_side = ...
+        return animal_side
+
+    def get_opposite_side(animal_side: str) -> str:
+        if (animal_side == "down"):
+            return "up"
+        else:
+            return "down"
+
+    def get_side_list(self, side: str) -> list:
+        if (side == "down"):
+            return self.downAnimalList
+        else:
+            return self.upAnimalList
 
     def die(self, dying_animal: Animals) -> None:
         '''
@@ -329,6 +362,7 @@ class Model():
         4. How to achieve: by iterating all that side of river squares positions except rat's in a chessboard, and check whether the rat positions are same as one of them
         '''
         pass
+
 
 if __name__ == "__main__":
     print("OK")
