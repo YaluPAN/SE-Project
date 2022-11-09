@@ -17,10 +17,12 @@ class View():
     def __init__(self):
         self.lion_str = "LION"
         self.wolf_str = "WOLF"
-        self.mice_str = "MICE"
-        self.puma_str = "PUMA"
+        self.rat_str = "RAT "
+        self.leopard_str = "LEOP"
         self.cat_str  = "CAT "
         self.dog_str  = "DOG "
+        self.tiger_str = "Tige"
+        self.elephant_str = "ELEP"
         self.vac_str  = "    "
 
         self.gameboard = """
@@ -48,7 +50,7 @@ class View():
         |  [02]  |  [12]  |  [22]  |  [32]  |  [42]  |  [52]  |  [62]  |
         |________|________|________|________|________|________|________|
         |        |        |        | -TRAP- |        |        |        |
-        |  [01]  |  [11]  |  [21]  |  [31}  |  [41]  |  [51]  |  [61]  |
+        |  [01]  |  [11]  |  [21]  |  [31]  |  [41]  |  [51]  |  [61]  |
         |________|________|________|________|________|________|________|
         |        |        | -TRAP- | -NEST- | -TRAP- |        |        |
         |  [00]  |  [10]  |  [20]  |  [30]  |  [40]  |  [50]  |  [60]  |
@@ -78,19 +80,46 @@ class View():
         _gameboard = self.gameboard
         for animal_i in player1:
             repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
-            if(isinstance(animal_i, Lion)): 
+
+            if(animal_i.name == "Lion"): 
                 _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, )): 
+            elif(animal_i.name == "Elephant"): 
+                _gameboard.replace(repl_str, self.elephant_str)
+            elif(animal_i.name == "Cat"):
+                _gameboard.replace(repl_str, self.cat_str)
+            elif(animal_i.name == "Leopard"): 
+                _gameboard.replace(repl_str, self.leopard_str)
+            elif(animal_i.name == "Dog"): 
+                _gameboard.replace(repl_str, self.dog_str)
+            elif(animal_i.name == "Tiger"): 
+                _gameboard.replace(repl_str, self.tiger_str)
+            elif(animal_i.name == "Wolf"): 
+                _gameboard.replace(repl_str, self.wolf_str)
+            elif(animal_i.name == "Rat"): 
+                _gameboard.replace(repl_str, self.rat_str)
+
+        for animal_i in player2:
+            repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
+
+            if(animal_i.name == "Lion"): 
                 _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            
+            elif(animal_i.name == "Elephant"): 
+                _gameboard.replace(repl_str, self.elephant_str)
+            elif(animal_i.name == "Cat"):
+                _gameboard.replace(repl_str, self.cat_str)
+            elif(animal_i.name == "Leopard"): 
+                _gameboard.replace(repl_str, self.leopard_str)
+            elif(animal_i.name == "Dog"): 
+                _gameboard.replace(repl_str, self.dog_str)
+            elif(animal_i.name == "Tiger"): 
+                _gameboard.replace(repl_str, self.tiger_str)
+            elif(animal_i.name == "Wolf"): 
+                _gameboard.replace(repl_str, self.wolf_str)
+            elif(animal_i.name == "Rat"): 
+                _gameboard.replace(repl_str, self.rat_str)
+        
+
+
         print(_gameboard)
     
     '''
