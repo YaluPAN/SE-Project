@@ -139,6 +139,7 @@ class View():
                  "Opponent rats cannot attack each other unless they are both in the water/on the land.",
                  "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",
                  "Rats cannot attack opponents directly if they are in different kinds of squares.",
+                 "Rank of the attacking opponent is higher than your chess",
                  "Chess out of border"}
         print(hints[hintNum])
     
