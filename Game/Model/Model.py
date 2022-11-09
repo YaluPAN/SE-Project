@@ -198,6 +198,7 @@ class Model():
         3. Return value: returns an enemy piece object
         4. How to achieve: by iterating positions of all enemy pieces, and find the one which has a same position with moving_animal
         '''
+        # hi
 
         try:
             position = moving_animal.getPosition()
