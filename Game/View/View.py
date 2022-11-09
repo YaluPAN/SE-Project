@@ -129,7 +129,7 @@ class View():
         helpMenu = """
                         -SELECT THE GAME INFO YOU WANT TO REFER-
         1. Rank of the chess    2. Square categories    3. 
-        Enter your selection: 
+        Enter your option: 
         """
         
         rankInfo = """
@@ -146,9 +146,9 @@ class View():
         |________|      |++++++++|      |________|      |________|
          L A N D        W A T E R        N E S T         T R A P
         """
-        selection = input(helpMenu)
-        if(selection == 1): print(rankInfo)
-        elif(selection == 2): print(squareInfo)
+        option = input(helpMenu)
+        if(option == 1): print(rankInfo)
+        elif(option == 2): print(squareInfo)
     
     '''
     This function displays different kinds of hints according to different invalid movements made by players. 
