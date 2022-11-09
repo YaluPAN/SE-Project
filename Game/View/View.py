@@ -156,12 +156,12 @@ class View():
     return: None
     '''
     def printHints(self, hintNum):
-        hintsList = {"Only rats are allowed to jump to the water square.",
+        hintsList = ["Only rats are allowed to jump to the water square.",
                  "Opponent rats cannot attack each other unless they are both in the water/on the land.",
                  "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",
                  "Rats cannot attack opponents directly if they are in different kinds of squares.",
                  "Rank of the attacking opponent is higher than your chess",
-                 "Chess out of border"}
+                 "Chess out of border."]
         print(hintsList[hintNum])
     
     '''
@@ -192,9 +192,9 @@ class View():
     
     return: None
     '''
-    def printCurrentRoundInfo():
+    def printCurrentRoundInfo(self, turnflag):
         
-        print()
+        print("The current turn is for Player ", turnflag % 2 + 1, ".")
         
    
     '''
@@ -203,7 +203,7 @@ class View():
     
     return: None
     '''
-    def printCapturedResult():
+    def printCapturedResult(self):
         capturedResult = Model.getCapturedResult()
         print(capturedResult)
     
