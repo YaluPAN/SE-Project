@@ -140,11 +140,11 @@ class View():
         """
         
         squareInfo = """
-         ________        ________
-        |        |      |////////|
-        |        |      |////////|
-        |________|      |++++++++|
-         L A N D        W A T E R
+         ________        ________        ________        ________       
+        |        |      |////////|      | -NEST- |      | -TRAP- |
+        |        |      |////////|      |        |      |        |
+        |________|      |++++++++|      |________|      |________|
+         L A N D        W A T E R        N E S T         T R A P
         """
         selection = input(helpMenu)
         if(selection == 1): print(rankInfo)
