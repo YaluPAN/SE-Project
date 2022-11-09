@@ -215,7 +215,7 @@ class View():
     def printGameResult(self, turnflag):
         
         print("Player ", turnflag % 2 + 1 ,"wins the game!")
-
+        print("Total number of rounds: ", turnflag)
 
 if __name__ == "__main__":
     view = View()
