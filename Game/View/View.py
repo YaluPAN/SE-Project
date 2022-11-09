@@ -117,8 +117,7 @@ class View():
                 _gameboard.replace(repl_str, self.wolf_str)
             elif(animal_i.name == "Rat"): 
                 _gameboard.replace(repl_str, self.rat_str)
-        
-
+       
 
         print(_gameboard)
     
@@ -135,8 +134,9 @@ class View():
     
     return: None
     '''
-    def printHints():
-        print()
+    def printHints(self, hintNum):
+        hints = {"","","","","","","",""}
+        print(hints[hintNum])
     
     '''
     This function displays a real-time countdown second during a player’s movement decision period. 
@@ -146,6 +146,7 @@ class View():
 
     '''
     def printTiming():
+        
         print()
     
     '''
@@ -156,6 +157,7 @@ class View():
     return: None
     '''
     def printMoveHistory():
+        
         print()
     
     '''
@@ -166,6 +168,7 @@ class View():
     '''
     def printCurrentRoundInfo():
         print()
+        
    
     '''
     This function displays a list of captured results in the current round when a player is making a movement decisio
@@ -182,8 +185,9 @@ class View():
 
     return: None
     '''
-    def printGameResult():
-        print()
+    def printGameResult(self, turnflag):
+        
+        print("Player ", turnflag % 2 + 1 ,"wins the game!")
 
 
 if __name__ == "__main__":
