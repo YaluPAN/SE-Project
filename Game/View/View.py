@@ -135,7 +135,11 @@ class View():
     return: None
     '''
     def printHints(self, hintNum):
-        hints = {"","","","","","","",""}
+        hints = {"Only rats are allowed to jump to the water square.",
+                 "Opponent rats cannot attack each other unless they are both in the water/on the land.",
+                 "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",
+                 "Rats cannot attack opponents directly if they are in different kinds of squares.",
+                 "Chess out of border"}
         print(hints[hintNum])
     
     '''
@@ -167,6 +171,7 @@ class View():
     return: None
     '''
     def printCurrentRoundInfo():
+        
         print()
         
    
