@@ -131,17 +131,17 @@ class View():
     
     '''
     This function displays different kinds of hints according to different invalid movements made by players. 
-    
+    The hintList stores all the hints in order, and an integer hintNum is required as parameters to determine which hint to print.
     return: None
     '''
     def printHints(self, hintNum):
-        hints = {"Only rats are allowed to jump to the water square.",
+        hintsList = {"Only rats are allowed to jump to the water square.",
                  "Opponent rats cannot attack each other unless they are both in the water/on the land.",
                  "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",
                  "Rats cannot attack opponents directly if they are in different kinds of squares.",
                  "Rank of the attacking opponent is higher than your chess",
                  "Chess out of border"}
-        print(hints[hintNum])
+        print(hintsList[hintNum])
     
     '''
     This function displays a real-time countdown second during a player’s movement decision period. 
