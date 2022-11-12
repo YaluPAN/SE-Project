@@ -1,8 +1,8 @@
 import os
 import sys
-from Game.View import View
-from Game.Model import Model
-from Game.Controller import Controller
+from Game.View.View import View
+from Game.Model.Model import Model
+from Game.Controller.Controller import Controller
 
 '''
 Initialization for the Jungle object which includes all the essential objects for the whole game.

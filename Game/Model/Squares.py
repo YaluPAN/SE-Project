@@ -15,14 +15,7 @@ class Squares:
         self.river_position = [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4),
                                (2, 5), (4, 3), (4, 4), (4, 5), (5, 3), (5, 4), (5, 5)]
 
-    def getRiverSide(self, square_position: tuple) -> str:
-        '''
-        1. This function is used to get the river side based on a specific square position. 
-        2. Function parameter: "square_position" is passed from get_new_estimated_position() in Model. 
-        3. Return value: returns a str, ether 'left' or 'right'. 
-        4. How to achieve: by iterating all river squares position, and find which on is the same as the "square_position"
-        '''
-        pass
+
 
     def get_den_position(self) -> list:
         # get den squares position, return a list of den position which is represented in tuple (x,y)
@@ -37,9 +30,12 @@ class Squares:
         return self.river_position
 
 
+
+
+
 class Animals(Squares):
     '''
-    The class "Squares" is designed to represent animals squares in a chessboard, including 8 types of animals. 
+    The class "Squares" is designed to represent animals squares in a chessboard, including 8 types of animals.
     The important attribute of the animals are: name, rank, position, and status(indicates they're live or dead)
     '''
 
@@ -48,32 +44,65 @@ class Animals(Squares):
         self.name = name
         self.rank = rank
         self.position = position
-        status = True
-        self.status = status
+        self.status = True
 
-    def getRank(self) -> int:
+    def getRiverSide(self) -> str:
+        for i in self.river_position:
+            if i == self.position:
+                if i.x == 1 or 2:
+                    return 'left'
+                else:
+                    return 'right'
+        '''
+        1. This function is used to get the river side based on a specific square position.
+        2. Function parameter: "square_position" is passed from get_new_estimated_position() in Model.
+        3. Return value: returns a str, ether 'left' or 'right'.
+        4. How to achieve: by iterating all river squares position, and find which on is the same as the "square_position"
+        '''
+        pass
+    def change_status(self):
+        self.status = False
+
+    def getRank(self):
         return self.rank
 
     def getPosition(self) -> tuple:
         return self.position
 
     def ifInTrap(self) -> bool:
+        for i in self.trap_position:
+            if i==self.getPosition():
+                return True
+        return False
+
+
         # check whether an animal position is in trap
-        pass
 
     def ifInLand(self) -> bool:
+
+        for i in self.get_river_position():
+                if i==self.getPosition():
+                    return False
+        return True
         # check whether an animal position is in land
-        pass
+
 
     def ifInDen(self) -> bool:
-        # check whether an animal position is in den
-        pass
+        for i in self.get_den_position():
+            if i == self.getPosition():
+                return True
+        return False
+        # check whether an animal position is in de
 
     def ifInRiver(self) -> bool:
+        for i in self.get_river_position():
+                if i==self.getPosition():
+                    return True
+        return False
         # check whether an animal position is in river
-        pass
 
-    def move(self, direction) -> None:
+
+    def move(self, direction):
         '''
         This function can be used only when ifCanMove() == True. The attribute of "position" of Animal instance will be changed after moving into next step in this function.
 
@@ -84,33 +113,34 @@ class Animals(Squares):
         '''
 
         try:
-            if (direction == "up"):
+            if direction == "up":
                 self.upMove()
-            elif (direction == "down"):
+            elif direction == "down":
                 self.downMove()
-            elif (direction == "left"):
+            elif direction == "left":
                 self.leftMove()
-            elif (direction == "right"):
+            elif direction == "right":
                 self.rightMove()
         except Exception:
             print("Error! The Animal's position can't change. Pls check move()")
 
     def jumpOver(self, direction) -> None:
         '''
-        This function is used only when the animal is Lion or Tiger. As they can jump over the river to the opponent side. Lion/Tiger's attribute of "position" will change. 
+        This function is used only when the animal is Lion or Tiger. As they can jump over the river to the opponent side. Lion/Tiger's attribute of "position" will change.
         No return value of this func.
         '''
         try:
-            if (direction == "up"):
+            if direction == "up":
                 self.jumpOverUp()
-            elif (direction == "down"):
+            elif direction == "down":
                 self.jumpOverDown()
-            elif (direction == "left"):
+            elif direction == "left":
                 self.jumpOverLeft()
-            elif (direction == "right"):
+            elif direction == "right":
                 self.jumpOverRight()
 
         except Exception:
+
             print("Error! The Animal's position can't change. Pls check jumpOver()")
 
     '''
@@ -138,20 +168,28 @@ class Animals(Squares):
     '''
     The 4 following functions (jumpOverUp(), jumpOverDown(), jumpOverLeft(), jumpOverRight()), are used in move().
 
-    No return value of these function. Because the purpose of this func is to change the "position" attribute of an Animal instance by changing the value of x or y in tuple of position. 
+    No return value of these function. Because the purpose of this func is to change the "position" attribute of an Animal instance by changing the value of x or y in tuple of position.
     '''
 
     def jumpOverUp(self) -> None:
-        pass
+        (x, y) = self.position
+        self.position = (x, y+4)
+
 
     def jumpOverDown(self) -> None:
-        pass
+        (x, y) = self.position
+        self.position = (x, y-4)
+
 
     def jumpOverLeft(self) -> None:
-        pass
+        (x, y) = self.position
+        self.position = (x-3, y)
+
 
     def jumpOverRight(self) -> None:
-        pass
+        (x, y) = self.position
+        self.position = (x+3, y)
+
 
 if __name__ == "__main__":
     print("everything OK")
