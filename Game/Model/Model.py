@@ -1,5 +1,5 @@
 from Game.Model.Squares import Squares, Animals
-
+import os
 
 class Model():
     '''
