@@ -4,7 +4,6 @@ import os
 from Game.Model.Model import Model
 
 
-
 class View():
     """
     initialization for object of View class.
@@ -64,7 +63,7 @@ class View():
     This function displays a welcome message in the interface before the game sta
     ts. The welcome message includes a welcome sentence, a system brief introduction
     on, a game rules description, and a brief user manual. 
-    
+
     return: None
     '''
 
@@ -78,7 +77,7 @@ class View():
     generate the current board regarding to two players' status as the parameter.
     each chess's location will be checked and replace() function will be called to replace the '[xx]' string on copied default chessboard with the chess string.
     finally, relpace all the still-vacant places with vac_str '    ' and print it.
-    
+
     return: None
     '''
 
@@ -86,7 +85,7 @@ class View():
         _gameboard = self.gameboard
         for animal_i in player1:
             repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
-            #print(repl_str)
+            # print(repl_str)
             if (animal_i.rank == 7):
                 _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.lion_str + '\033[0m')
             elif (animal_i.rank == 8):
@@ -106,7 +105,7 @@ class View():
 
         for animal_i in player2:
             repl_str = "[" + str(animal_i.position[0]) + \
-                str(animal_i.position[1]) + "]"
+                       str(animal_i.position[1]) + "]"
 
             if (animal_i.rank == 7):
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.lion_str + '\033[0m')
@@ -171,7 +170,7 @@ class View():
                      " Can't move to next step since it's occupied by higher rank enemy",  # Hint3
                      " The rat can't move to next step since the square is occupied by enemy rat",  # Hint4
                      " The elephant can't move to next step since the square is occupied by enemy rat",  # Hint5
-                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river", # Hint6
+                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river",  # Hint6
                      " Lion(7), Tiger(6) can't move across the river since there is a rat in the river now",  # Hint7
                      " Can't move to next step since it's your side's den ",  # Hint8
                      " The animal can move to next step (successful hint)"]  # Hint9
@@ -204,7 +203,7 @@ class View():
     '''
     This function displays the current round number in each round of the game. 
     It’s an additional function that aims to provide a better view of chess competitions.
-    
+
     return: None
     '''
 
@@ -215,7 +214,7 @@ class View():
     '''
     This function displays a list of captured results in the current round when a player is making a movement decisio
     n. It provides a review so that players can know what his/her has captured instead of spending time observing the chessboard.
-    
+
     return: None
     '''
 
