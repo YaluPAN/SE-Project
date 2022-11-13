@@ -105,7 +105,7 @@ class ChessboardTest(unittest.TestCase):
         wolf1 = self.md.upAnimalList[3]
         wolf1.position = (3, 7)
         result = self.md.if_in_opposite_den(wolf1, 'up', 'move')
-        self.assertEqual(result, True)
+        self.assertEqual(result, False)
 
     def test_if_new_position_has_enemy_that_can_be_eaten(self) -> None:
         """
@@ -401,7 +401,7 @@ class ChessboardTest(unittest.TestCase):
         rat2: md.Animals = self.md.upAnimalList[0]
         rat2.position = (2, 5)
         self.assertEqual(self.md.if_rat_in_that_river("left"), True)
-      
+
 
 
 if __name__ == "__main__":
