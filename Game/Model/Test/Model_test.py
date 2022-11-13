@@ -11,10 +11,8 @@ from unittest.mock import Mock
 
 
 class ChessboardTest(unittest.TestCase):
-
     def setUp(self) -> None:
         self.md = md.Model()
-
     def test_ifCanMove(self):
         """
         There are totally 5 situations when an Animal Chess is moved:
@@ -99,7 +97,6 @@ class ChessboardTest(unittest.TestCase):
         # test for C-iii
         lion1.position = (0, 8)
         self.assertEqual(self.md.ifCanMove(lion1, "down"), True)
-        self.pointBackOri()
 
     def test_if_in_opposite_den(self):
         wolf1 = self.md.upAnimalList[3]
@@ -142,7 +139,6 @@ class ChessboardTest(unittest.TestCase):
         elephant.position = (3, 0)
         self.assertEqual(elephant.ifInDen(), True)
         self.assertEqual(self.md.if_in_Den(elephant), True)
-        self.pointBackOri()
 
     def test_move(self) -> None:
         wolf1, rat1, leopard1 = self.md.downAnimalList[3], self.md.upAnimalList[0], self.md.downAnimalList[4]
@@ -155,7 +151,6 @@ class ChessboardTest(unittest.TestCase):
         self.assertEqual(leopard1.getPosition(), (4, 2))
         leopard1.move("left")
         self.assertEqual(leopard1.getPosition(), (3, 2))
-        self.pointBackOri()
 
     def test_jumpover(self) -> None:
         """
@@ -172,15 +167,11 @@ class ChessboardTest(unittest.TestCase):
         self.assertEqual(self.md.jumpOver(lion1, "left"), (3, 3))  # here, no rat at river!
         tiger1.position = (1, 6)
         self.assertEqual(self.md.jumpOver(tiger1, "down"), (1, 2))
-        self.pointBackOri()
-
-    def pointBackOri(self) -> None:
-        """this is not a test set, only to reset point back to their original point"""
-        downpos = [(6, 2), (1, 1), (5, 1), (2, 2), (4, 2), (0, 0), (6, 0)]
-        uppos = [(0, 6), (5, 7), (1, 7), (4, 6), (2, 6), (6, 8), (0, 8), (6, 6)]
-        for num in range(0, 8):
-            self.md.upAnimalList[num].position = uppos[num]
-            self.md.downAnimalList[num].position = downpos[num]
+    def test_get_same_position_enemy(self):
+        cat1, dog2 = self.md.upAnimalList[1], self.md.downAnimalList[2]
+        cat1.position = (3, 4)
+        dog2.position = (3, 4)
+        self.assertEqual(self.md.get_same_position_enemy(dog2),'upside_Cat')
 
     def test_die(self) -> None:
         cat1: md.Animals = self.md.upAnimalList[1]

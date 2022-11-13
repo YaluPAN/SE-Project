@@ -2,7 +2,7 @@ from Game.Model.Squares import Squares, Animals
 import os
 
 
-class Model():
+class Model:
     '''
     The Model component manages the system data and associated operations on that data.
     The "Model" class here is initialized to be a new chessboard at every time the game starts.
