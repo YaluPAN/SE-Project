@@ -27,7 +27,6 @@ class Jungle:
 
     def start(self):
         self.game_view.printWelcomePage()
-        self.game_controller.chooseLanguage()
         self.game_controller.chooseSide()
         self.game_controller.executeInput()
 

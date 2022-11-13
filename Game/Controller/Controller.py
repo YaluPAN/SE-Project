@@ -28,25 +28,6 @@ class Controller:
         self.game_model = game_model
         self.game_view = game_view
 
-    '''
-    choose the language for the game,this will be called by Jungle.py during the execution of the game
-    return: None
-    '''
-
-    def chooseLanguage(self):
-        """
-        After choosing the side, two player list should with a signature to be pointed and able to be recognized.
-        Major related function should get from Model.Model
-        :return: None
-        """
-        inputs: str = input(
-            "Please choose your language preference(Chinese or English), and color (Green or Blue): ")
-        if inputs == "chinese":
-            pass
-
-        elif inputs == "english":
-            pass
-
     def chooseSide(self, turnflag: int) -> int:
         """
         since the upside and downside layer were already be initialized, so we directly
@@ -172,7 +153,8 @@ class Controller:
     '''
     Check whether one side of animals are dead
     '''
-    def all_dead(self, moving) -> bool: 
+
+    def all_dead(self, moving) -> bool:
         opponent = self.returnOpponent(moving)
         aside: int = 0
         for val in opponent:
