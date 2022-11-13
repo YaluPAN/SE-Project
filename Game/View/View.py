@@ -88,42 +88,42 @@ class View():
             repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
 
             if (animal_i.rank == 7):
-                _gameboard.replace(repl_str, self.lion_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.lion_str + '\033[0m')
             elif (animal_i.rank == 8):
-                _gameboard.replace(repl_str, self.elephant_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.elephant_str + '\033[0m')
             elif (animal_i.rank == 2):
-                _gameboard.replace(repl_str, self.cat_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.cat_str + '\033[0m')
             elif (animal_i.rank == 5):
-                _gameboard.replace(repl_str, self.leopard_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.leopard_str + '\033[0m')
             elif (animal_i.rank == 3):
-                _gameboard.replace(repl_str, self.dog_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.dog_str + '\033[0m')
             elif (animal_i.rank == 6):
-                _gameboard.replace(repl_str, self.tiger_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.tiger_str + '\033[0m')
             elif (animal_i.rank == 4):
-                _gameboard.replace(repl_str, self.wolf_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.wolf_str + '\033[0m')
             elif (animal_i.rank == 1):
-                _gameboard.replace(repl_str, self.rat_str)
+                _gameboard.replace(repl_str, '\033[93m' + self.rat_str + '\033[0m')
 
         for animal_i in player2:
             repl_str = "[" + str(animal_i.position[0]) + \
                 str(animal_i.position[1]) + "]"
 
             if (animal_i.name == 7):
-                _gameboard.replace(repl_str, self.lion_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.lion_str + '\033[0m')
             elif (animal_i.rank == 8):
-                _gameboard.replace(repl_str, self.elephant_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.elephant_str + '\033[0m')
             elif (animal_i.rank == 2):
-                _gameboard.replace(repl_str, self.cat_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.cat_str + '\033[0m')
             elif (animal_i.rank == 5):
-                _gameboard.replace(repl_str, self.leopard_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.leopard_str + '\033[0m')
             elif (animal_i.rank == 3):
-                _gameboard.replace(repl_str, self.dog_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.dog_str + '\033[0m')
             elif (animal_i.rank == 6):
-                _gameboard.replace(repl_str, self.tiger_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.tiger_str + '\033[0m')
             elif (animal_i.rank == 4):
-                _gameboard.replace(repl_str, self.wolf_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.wolf_str + '\033[0m')
             elif (animal_i.rank == 1):
-                _gameboard.replace(repl_str, self.rat_str)
+                _gameboard.replace(repl_str, '\033[94m' + self.rat_str + '\033[0m')
 
         print(_gameboard)
 
@@ -171,10 +171,8 @@ class View():
                      " Can't move to next step since it's occupied by higher rank enemy",  # Hint3
                      " The rat can't move to next step since the square is occupied by enemy rat",  # Hint4
                      " The elephant can't move to next step since the square is occupied by enemy rat",  # Hint5
-                     # Hint6
-                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river",
-                     # Hint7
-                     " Lion(7), Tiger(6) can't move across the river since there is a rat in the river now",
+                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river", # Hint6
+                     " Lion(7), Tiger(6) can't move across the river since there is a rat in the river now",  # Hint7
                      " Can't move to next step since it's your side's den ",  # Hint8
                      " The animal can move to next step (successful hint)"]  # Hint9
         print(hintsList[hintNum])
