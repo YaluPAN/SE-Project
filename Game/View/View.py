@@ -108,7 +108,7 @@ class View():
             repl_str = "[" + str(animal_i.position[0]) + \
                 str(animal_i.position[1]) + "]"
 
-            if (animal_i.name == 7):
+            if (animal_i.rank == 7):
                 _gameboard.replace(repl_str, '\033[94m' + self.lion_str + '\033[0m')
             elif (animal_i.rank == 8):
                 _gameboard.replace(repl_str, '\033[94m' + self.elephant_str + '\033[0m')
