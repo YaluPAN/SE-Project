@@ -49,7 +49,8 @@ class Animals(Squares):
     def getRiverSide(self) -> str:
         for i in self.river_position:
             if i == self.position:
-                if i.x == 1 or 2:
+
+                if i[0] == 1 or 2:
                     return 'left'
                 else:
                     return 'right'

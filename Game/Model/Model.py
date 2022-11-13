@@ -1,6 +1,7 @@
 from Game.Model.Squares import Squares, Animals
 import os
 
+
 class Model():
     '''
     The Model component manages the system data and associated operations on that data.
@@ -50,6 +51,7 @@ class Model():
         self.den_position = den_position
         self.trap_position = trap_position
         self.river_position = river_position
+
 
     def ifCanMove(self, moving_animal: Animals, direction, action) -> tuple:
         '''
@@ -163,7 +165,7 @@ class Model():
         '''
         moving_animal.jumpOver(direction)
 
-    def if_new_position_has_enemy_that_can_be_eaten(self, moving_animal: Animals) -> bool:
+    def if_new_position_has_enemy_that_can_be_eaten(self, moving_animal: Animals, position) -> bool:
         '''
         1. Purpose: This function is used to check that if the new position where the animal move to has an enemy that it can eat.
         2. Function parameter: "moving_animal" is passed from Controller
@@ -240,7 +242,7 @@ class Model():
         '''
 
     def get_estimated_new_position(self, moving_animal: Animals, direction, action) -> tuple:
-        (x, y) = Animals.getPosition()
+        (x, y) = moving_animal.getPosition()
         if action == 'move':
             if direction == 'up':
                 return x, y + 1
@@ -305,8 +307,8 @@ class Model():
                     return True
             return False
         else:
-            for i in self.downAnimalList:
-                if i.position == position:
+            for i in self.upAnimalList:
+                if i.getPosition() == position:
                     return True
             return False
 
@@ -331,7 +333,7 @@ class Model():
                         return True
             return False
 
-        pass
+
 
     def if_position_has_lower_rank_enemy(self, moving_animal: Animals, position: tuple) -> bool:
         '''
@@ -370,7 +372,7 @@ class Model():
             a)For all Animals except Elephant(8): find if the position is already occupied by enemies that have a higher rank.
             b)For Elephant(8): find if the position is already occupied by enemy Rat(1)
         """
-        if (moving_animal.getRank() != '8'):
+        if moving_animal.getRank() != '8':
             # find if the position is already occupied by enemies that have a higher rank.
             if moving_animal.name[0] == 'u':
                 for i in self.downAnimalList:
@@ -397,7 +399,7 @@ class Model():
         for i in self.river_position:
             if i == new_position:
                 return True
-            return False
+        return False
 
     def if_position_has_enemy_Elephant(self, moving_animal: Animals, position: tuple) -> bool:
         """
@@ -414,7 +416,7 @@ class Model():
             return False
 
         else:
-            for i in self.downAnimalList:
+            for i in self.upAnimalList:
                 if i.position == position and i.name == 'upside_Elephant':
                     return True
             return False
@@ -433,7 +435,7 @@ class Model():
             return False
 
         else:
-            for i in self.downAnimalList:
+            for i in self.upAnimalList:
                 if i.position == position and i.name == 'upside_Rat':
                     return True
             return False
@@ -452,15 +454,13 @@ class Model():
             return False
 
         else:
-            for i in self.downAnimalList:
+            for i in self.upAnimalList:
                 if i.position == position and i.name != 'upside_Rat' and i.rank < moving_animal.rank:
                     return True
             return False
 
-
     def if_rat_in_that_river(self, side_of_river: str):
-        if self.downAnimalList[0].getRiverSide() == side_of_river or self.upAnimalList[
-            0].getRiverSide() == side_of_river:
+        if self.downAnimalList[0].getRiverSide() == side_of_river or self.upAnimalList[0].getRiverSide() == side_of_river:
             return True
         return False
 
