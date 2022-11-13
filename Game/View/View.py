@@ -2,7 +2,8 @@ import sys
 import os
 
 from Model import Model
-import Chess
+
+
 
 class View():
     """
@@ -11,17 +12,20 @@ class View():
     substrings '[xx]' represents the location on board (e.g. '[64]' represents location = (6,4)).
     Traps and nests are marked by texts, and two river pools are marked by slashes.
     strings representing each animal chess and vacant places are stored for generating the chessboard according to players' status.
-    
+
     return: None
     """
+
     def __init__(self):
         self.lion_str = "LION"
         self.wolf_str = "WOLF"
-        self.mice_str = "MICE"
-        self.puma_str = "PUMA"
-        self.cat_str  = "CAT "
-        self.dog_str  = "DOG "
-        self.vac_str  = "    "
+        self.rat_str = "RAT "
+        self.leopard_str = "LEOP"
+        self.cat_str = "CAT "
+        self.dog_str = "DOG "
+        self.tiger_str = "Tige"
+        self.elephant_str = "ELEP"
+        self.vac_str = "    "
 
         self.gameboard = """
                                     -ROUND NN-
@@ -48,25 +52,28 @@ class View():
         |  [02]  |  [12]  |  [22]  |  [32]  |  [42]  |  [52]  |  [62]  |
         |________|________|________|________|________|________|________|
         |        |        |        | -TRAP- |        |        |        |
-        |  [01]  |  [11]  |  [21]  |  [31}  |  [41]  |  [51]  |  [61]  |
+        |  [01]  |  [11]  |  [21]  |  [31]  |  [41]  |  [51]  |  [61]  |
         |________|________|________|________|________|________|________|
         |        |        | -TRAP- | -NEST- | -TRAP- |        |        |
         |  [00]  |  [10]  |  [20]  |  [30]  |  [40]  |  [50]  |  [60]  |
         |________|________|________|________|________|________|________|
 
         """
+
     '''
     This function displays a welcome message in the interface before the game sta
-    ts. The welcome message includes a welcome sentence, a system brief introducti
+    ts. The welcome message includes a welcome sentence, a system brief introduction
     on, a game rules description, and a brief user manual. 
     
     return: None
     '''
+
     def printWelcomePage():
         print("        WELCOME TO JUNGLE GAME DEVELOPED BY GRP3        ")
 
     def askPreference():
         print()
+
     '''
     generate the current board regarding to two players' status as the parameter.
     each chess's location will be checked and replace() function will be called to replace the '[xx]' string on copied default chessboard with the chess string.
@@ -74,41 +81,104 @@ class View():
     
     return: None
     '''
-    def printChessboard(player1: Model.Players, player2: Model.Players):
+
+    def printChessboard(self, player1: Model.Players, player2: Model.Players):
         _gameboard = self.gameboard
         for animal_i in player1:
             repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
-            if(isinstance(animal_i, Lion)): 
+
+            if (animal_i.rank == 7):
                 _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, )): 
+            elif (animal_i.rank == 8):
+                _gameboard.replace(repl_str, self.elephant_str)
+            elif (animal_i.rank == 2):
+                _gameboard.replace(repl_str, self.cat_str)
+            elif (animal_i.rank == 5):
+                _gameboard.replace(repl_str, self.leopard_str)
+            elif (animal_i.rank == 3):
+                _gameboard.replace(repl_str, self.dog_str)
+            elif (animal_i.rank == 6):
+                _gameboard.replace(repl_str, self.tiger_str)
+            elif (animal_i.rank == 4):
+                _gameboard.replace(repl_str, self.wolf_str)
+            elif (animal_i.rank == 1):
+                _gameboard.replace(repl_str, self.rat_str)
+
+        for animal_i in player2:
+            repl_str = "[" + str(animal_i.position[0]) + \
+                str(animal_i.position[1]) + "]"
+
+            if (animal_i.name == 7):
                 _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            elif(isinstance(animal_i, Lion)): 
-                _gameboard.replace(repl_str, self.lion_str)
-            
+            elif (animal_i.rank == 8):
+                _gameboard.replace(repl_str, self.elephant_str)
+            elif (animal_i.rank == 2):
+                _gameboard.replace(repl_str, self.cat_str)
+            elif (animal_i.rank == 5):
+                _gameboard.replace(repl_str, self.leopard_str)
+            elif (animal_i.rank == 3):
+                _gameboard.replace(repl_str, self.dog_str)
+            elif (animal_i.rank == 6):
+                _gameboard.replace(repl_str, self.tiger_str)
+            elif (animal_i.rank == 4):
+                _gameboard.replace(repl_str, self.wolf_str)
+            elif (animal_i.rank == 1):
+                _gameboard.replace(repl_str, self.rat_str)
+
         print(_gameboard)
-    
+
     '''
     handle help request. classify the user's questions for the rules by requesting new inputs and print related instructions.
     return: None
     '''
+
     def printHelp():
-        print()
-    
-    
+        helpMenu = """
+                        -SELECT THE GAME INFO YOU WANT TO REFER-
+        1. Rank of the chess    2. Square categories    3. 
+        Enter your option: 
+        """
+
+        rankInfo = """
+        _____________________________________________________________________
+        |Rank    8       7       6       5       4       3       2       1  |
+        |Piece   ELEP    LION    TIGE    LEOP    WOLF    DOG     CAT     RAT|
+        ---------------------------------------------------------------------
+        """
+
+        squareInfo = """
+         ________        ________        ________        ________       
+        |        |      |////////|      | -NEST- |      | -TRAP- |
+        |        |      |////////|      |        |      |        |
+        |________|      |++++++++|      |________|      |________|
+         L A N D        W A T E R        N E S T         T R A P
+        """
+        option = input(helpMenu)
+        if (option == 1):
+            print(rankInfo)
+        elif (option == 2):
+            print(squareInfo)
+
     '''
     This function displays different kinds of hints according to different invalid movements made by players. 
-    
+    The hintList stores all the hints in order, and an integer hintNum is required as parameters to determine which hint to print.
     return: None
     '''
-    def printHints():
-        print()
-    
+
+    def printHints(self, hintNum):  # hintNum:
+        hintsList = [" Can't move to next step since it's out of chessboard range",  # Hint1
+                     " Can't move to next step since it's occupied by your side's animals",  # Hint2
+                     " Can't move to next step since it's occupied by higher rank enemy",  # Hint3
+                     " The rat can't move to next step since the square is occupied by enemy rat",  # Hint4
+                     " The elephant can't move to next step since the square is occupied by enemy rat",  # Hint5
+                     # Hint6
+                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river",
+                     # Hint7
+                     " Lion(7), Tiger(6) can't move across the river since there is a rat in the river now",
+                     " Can't move to next step since it's your side's den ",  # Hint8
+                     " The animal can move to next step (successful hint)"]  # Hint9
+        print(hintsList[hintNum])
+
     '''
     This function displays a real-time countdown second during a player’s movement decision period. 
     The game is designed to be time-limited, as this enhances player focus and improves the sense of involvement in the game.
@@ -116,9 +186,11 @@ class View():
     return: None
 
     '''
+
     def printTiming():
+
         print()
-    
+
     '''
     This function displays a player’s chess move hist
     ory, including which chess is chosen to move, how it moves,s and its captured results (if it h
@@ -126,35 +198,43 @@ class View():
     game.
     return: None
     '''
+
     def printMoveHistory():
+
         print()
-    
+
     '''
     This function displays the current round number in each round of the game. 
     It’s an additional function that aims to provide a better view of chess competitions.
     
     return: None
     '''
-    def printCurrentRoundInfo():
-        print()
-   
+
+    def printCurrentRoundInfo(self, turnflag):
+
+        print("The current turn is for Player ", turnflag % 2 + 1, ".")
+
     '''
     This function displays a list of captured results in the current round when a player is making a movement decisio
     n. It provides a review so that players can know what his/her has captured instead of spending time observing the chessboard.
     
     return: None
     '''
-    def printCapturedResult():
+
+    def printCapturedResult(self):
         capturedResult = Model.getCapturedResult()
         print(capturedResult)
-    
+
     '''
     This function displays the game result about which player wins the game at the end of the game. 
 
     return: None
     '''
-    def printGameResult():
-        print()
+
+    def printGameResult(self, turnflag):
+
+        print("Player ", turnflag % 2 + 1, "wins the game!")
+        print("Total number of rounds: ", turnflag)
 
 
 if __name__ == "__main__":
