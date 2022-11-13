@@ -85,45 +85,44 @@ class View():
     def printChessboard(self, player1: Model.Players, player2: Model.Players):
         _gameboard = self.gameboard
         for animal_i in player1:
-            repl_str = "[" + str(animal_i.position[0]) + \
-                str(animal_i.position[1]) + "]"
+            repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
 
-            if (animal_i.name == "Lion"):
+            if (animal_i.rank == 7):
                 _gameboard.replace(repl_str, self.lion_str)
-            elif (animal_i.name == "Elephant"):
+            elif (animal_i.rank == 8):
                 _gameboard.replace(repl_str, self.elephant_str)
-            elif (animal_i.name == "Cat"):
+            elif (animal_i.rank == 2):
                 _gameboard.replace(repl_str, self.cat_str)
-            elif (animal_i.name == "Leopard"):
+            elif (animal_i.rank == 5):
                 _gameboard.replace(repl_str, self.leopard_str)
-            elif (animal_i.name == "Dog"):
+            elif (animal_i.rank == 3):
                 _gameboard.replace(repl_str, self.dog_str)
-            elif (animal_i.name == "Tiger"):
+            elif (animal_i.rank == 6):
                 _gameboard.replace(repl_str, self.tiger_str)
-            elif (animal_i.name == "Wolf"):
+            elif (animal_i.rank == 4):
                 _gameboard.replace(repl_str, self.wolf_str)
-            elif (animal_i.name == "Rat"):
+            elif (animal_i.rank == 1):
                 _gameboard.replace(repl_str, self.rat_str)
 
         for animal_i in player2:
             repl_str = "[" + str(animal_i.position[0]) + \
                 str(animal_i.position[1]) + "]"
 
-            if (animal_i.name == "Lion"):
+            if (animal_i.name == 7):
                 _gameboard.replace(repl_str, self.lion_str)
-            elif (animal_i.name == "Elephant"):
+            elif (animal_i.rank == 8):
                 _gameboard.replace(repl_str, self.elephant_str)
-            elif (animal_i.name == "Cat"):
+            elif (animal_i.rank == 2):
                 _gameboard.replace(repl_str, self.cat_str)
-            elif (animal_i.name == "Leopard"):
+            elif (animal_i.rank == 5):
                 _gameboard.replace(repl_str, self.leopard_str)
-            elif (animal_i.name == "Dog"):
+            elif (animal_i.rank == 3):
                 _gameboard.replace(repl_str, self.dog_str)
-            elif (animal_i.name == "Tiger"):
+            elif (animal_i.rank == 6):
                 _gameboard.replace(repl_str, self.tiger_str)
-            elif (animal_i.name == "Wolf"):
+            elif (animal_i.rank == 4):
                 _gameboard.replace(repl_str, self.wolf_str)
-            elif (animal_i.name == "Rat"):
+            elif (animal_i.rank == 1):
                 _gameboard.replace(repl_str, self.rat_str)
 
         print(_gameboard)
