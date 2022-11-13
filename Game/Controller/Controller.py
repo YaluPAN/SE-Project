@@ -40,10 +40,30 @@ class Controller:
             turnflag = 0
         else:
             print("You input the wrong command, please input 'up' or 'down'. ")
+<<<<<<< Updated upstream
             return self.chooseSide(turnflag)
         return turnflag
 
     def executeInput(self, turnFlag: int) -> int:
+=======
+            return self.chooseSide()
+        return
+
+    def executeInput(self) -> None:
+        while not self.exit:
+            self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList)
+            print("Now this is " + str(self.turnFlag % 2) + " turn")
+            self.processing()
+            self.turnFlag += 1
+
+    def inputValid(self, inputs) -> bool:
+        if inputs[1] not in matchers.keys() or inputs[2] not in ["right", "left", "up", "down"]:
+            print("Invalid input, please change it.")
+            return False
+        return True
+
+    def processing(self) -> int:
+>>>>>>> Stashed changes
         """
         processor for commands (user input). A boolean flag of a player's turn will be received to judge whether it
         was the player's round. if move is selected, the function will check whether that was a legal move calling
@@ -60,6 +80,7 @@ class Controller:
 
         inputs: list = input(
             "Please input your commands: ").split()
+<<<<<<< Updated upstream
         if inputs[0] == "move" or inputs[0] == "jumpOver":
             ranks = self.gamer[matchers[inputs[1].lower()]]
             if self.ifEnd(self.gamer[ranks], inputs[1:]):
@@ -73,6 +94,25 @@ class Controller:
                 self.game_model.jumpOver(self.gamer[ranks], inputs[2])
             if self.game_model.if_new_position_has_enemy_that_can_be_eaten(self.gamer[ranks]):
                 opponent: anim = self.game_model.get_same_position_enemy()
+=======
+        inputs = [key.lower() for key in inputs]
+        if inputs[0] == "move" or inputs[0] == "jump":
+            if not self.inputValid(inputs):
+                return self.processing()
+            moving = self.gamer[matchers[inputs[1].lower()] - 1]
+            if self.ifEnd(moving, inputs[1:]): self.finalPrint()
+            potential = self.game_model.ifCanMove(moving, inputs[2], inputs[0])
+            if not potential[0]:
+                self.game_view.printHints(potential[1])
+                return self.processing()
+
+            if inputs[0] == "move":
+                self.game_model.move(moving, inputs[2])
+            elif inputs[0] == "jump":
+                self.game_model.jumpOver(moving, inputs[2])
+            if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving, inputs[-1], inputs[0]):
+                opponent: anim = self.game_model.get_same_position_enemy(moving)
+>>>>>>> Stashed changes
                 self.game_model.die(opponent)
             self.commandRecord(" ".join(inputs))
         elif inputs[0] == "help":
@@ -108,9 +148,15 @@ class Controller:
             file.write(inputs + "\n")
         return
 
+<<<<<<< Updated upstream
     def finalPrint(self, turnFlag):
         self.game_view.printGameResult(turnFlag)
         self.game_view.printCapturedResult()
+=======
+    def finalPrint(self):
+        self.game_view.printGameResult(self.turnFlag)
+        # self.game_view.printCapturedResult()
+>>>>>>> Stashed changes
         sys.exit()
 
     '''
