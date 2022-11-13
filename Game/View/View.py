@@ -23,7 +23,7 @@ class View():
         self.leopard_str = "LEOP"
         self.cat_str = "CAT "
         self.dog_str = "DOG "
-        self.tiger_str = "Tige"
+        self.tiger_str = "TIGE"
         self.elephant_str = "ELEP"
         self.vac_str = "    "
 
@@ -82,48 +82,48 @@ class View():
     return: None
     '''
 
-    def printChessboard(self, player1: Model.Players, player2: Model.Players):
+    def printChessboard(self, player1: list, player2: list):
         _gameboard = self.gameboard
         for animal_i in player1:
             repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
-
+            #print(repl_str)
             if (animal_i.rank == 7):
-                _gameboard.replace(repl_str, '\033[93m' + self.lion_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.lion_str + '\033[0m')
             elif (animal_i.rank == 8):
-                _gameboard.replace(repl_str, '\033[93m' + self.elephant_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.elephant_str + '\033[0m')
             elif (animal_i.rank == 2):
-                _gameboard.replace(repl_str, '\033[93m' + self.cat_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.cat_str + '\033[0m')
             elif (animal_i.rank == 5):
-                _gameboard.replace(repl_str, '\033[93m' + self.leopard_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.leopard_str + '\033[0m')
             elif (animal_i.rank == 3):
-                _gameboard.replace(repl_str, '\033[93m' + self.dog_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.dog_str + '\033[0m')
             elif (animal_i.rank == 6):
-                _gameboard.replace(repl_str, '\033[93m' + self.tiger_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.tiger_str + '\033[0m')
             elif (animal_i.rank == 4):
-                _gameboard.replace(repl_str, '\033[93m' + self.wolf_str + '\033[0m')
-            elif (animal_i.rank == 1):
-                _gameboard.replace(repl_str, '\033[93m' + self.rat_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.wolf_str + '\033[0m')
+            else:
+                _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.rat_str + '\033[0m')
 
         for animal_i in player2:
             repl_str = "[" + str(animal_i.position[0]) + \
                 str(animal_i.position[1]) + "]"
 
-            if (animal_i.name == 7):
-                _gameboard.replace(repl_str, '\033[94m' + self.lion_str + '\033[0m')
+            if (animal_i.rank == 7):
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.lion_str + '\033[0m')
             elif (animal_i.rank == 8):
-                _gameboard.replace(repl_str, '\033[94m' + self.elephant_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.elephant_str + '\033[0m')
             elif (animal_i.rank == 2):
-                _gameboard.replace(repl_str, '\033[94m' + self.cat_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.cat_str + '\033[0m')
             elif (animal_i.rank == 5):
-                _gameboard.replace(repl_str, '\033[94m' + self.leopard_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.leopard_str + '\033[0m')
             elif (animal_i.rank == 3):
-                _gameboard.replace(repl_str, '\033[94m' + self.dog_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.dog_str + '\033[0m')
             elif (animal_i.rank == 6):
-                _gameboard.replace(repl_str, '\033[94m' + self.tiger_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.tiger_str + '\033[0m')
             elif (animal_i.rank == 4):
-                _gameboard.replace(repl_str, '\033[94m' + self.wolf_str + '\033[0m')
-            elif (animal_i.rank == 1):
-                _gameboard.replace(repl_str, '\033[94m' + self.rat_str + '\033[0m')
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.wolf_str + '\033[0m')
+            else:
+                _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.rat_str + '\033[0m')
 
         print(_gameboard)
 

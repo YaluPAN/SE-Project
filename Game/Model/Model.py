@@ -1,6 +1,7 @@
 from Game.Model.Squares import Squares, Animals
 import os
 
+
 class Model():
     '''
     The Model component manages the system data and associated operations on that data.
@@ -15,7 +16,7 @@ class Model():
     # initialize a new Chessboard
     def __init__(self):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
-        downside_Rat = Animals("downside_Rat", 1, (6, 2), True)
+        downside_Rat = Animals("downside_Rat", 1, (5, 3), True) # (6, 2)
         downside_Cat = Animals("downside_Cat", 2, (1, 1), True)
         downside_Dog = Animals("downside_Dog", 3, (5, 1), True)
         downside_Wolf = Animals("downside_Wolf", 4, (2, 2), True)
@@ -31,7 +32,7 @@ class Model():
         upside_Wolf = Animals("upside_Wolf", 4, (4, 6), True)
         upside_Leopard = Animals("upside_Leopard", 5, (2, 6), True)
         upside_Tiger = Animals("upside_Tiger", 6, (6, 8), True)
-        upside_Lion = Animals("upside_Lion", 7, (0, 8), True)
+        upside_Lion = Animals("upside_Lion", 7, (3, 3), True) # (0, 8)
         upside_Elephant = Animals("upside_Elephant", 8, (6, 6), True)
 
         downAnimalList = [downside_Rat, downside_Cat, downside_Dog,
@@ -39,6 +40,9 @@ class Model():
 
         upAnimalList = [upside_Rat, upside_Cat, upside_Dog,
                         upside_Wolf, upside_Leopard, upside_Tiger, upside_Lion, upside_Elephant]
+
+        near_river_position = [(0, 3), (0, 4), (0, 5), (1, 2), (2, 2), (1, 6), (2, 6), (3, 3), (3, 4), (3, 5),
+                               (4, 2), (5, 2), (6, 3), (6, 4), (6, 5), (4, 6), (5, 6)]
 
         squares = Squares()
         den_position = squares.get_den_position()
@@ -50,6 +54,7 @@ class Model():
         self.den_position = den_position
         self.trap_position = trap_position
         self.river_position = river_position
+        self.near_river_position = near_river_position
 
     def ifCanMove(self, moving_animal: Animals, direction, action) -> tuple:
         '''
@@ -76,16 +81,6 @@ class Model():
         Hint8 = 8
         Hint9 = 9
 
-        # Hint1: Can't move to next step since it's out of chessboard range
-        # Hint2: Can't move to next step since it's occupied by your side's animals
-        # Hint3: Can't move to next step since it's occupied by higher rank enemy
-        # Hint4: The rat can't move to next step since the square is occupied by enemy rat
-        # Hint5: The elephant can't move to next step since the square is occupied by enemy rat
-        # Hint6: Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river
-        # Hint7: Lion(7), Tiger(6) can't move across the river since there is a rat in the river now
-        # Hint8: Can't move to next step since it's your side's den 
-        # Hint9: The animal can move to next step (successful hint)
-
         # get the estimated new position of the animal. This position is NOT the real position of animals, but an estimated one, which is used for validating purpose.
         try:
             new_position = self.get_estimated_new_position(moving_animal, direction, action)
@@ -99,19 +94,59 @@ class Model():
                         return False, Hint8
                     return True, Hint8
 
-            
-
-
             # 1 If the animal's next step in out of chessboard range
             elif (self.if_move_out_of_range(new_position) == True):
                 return (False, Hint1)
 
             # 2 If the animal's next step is in land:
-            elif (self.if_next_step_in_land(new_position) == True):
-                # For all Animals, they're not allowed to move to:
+            elif self.if_next_step_in_land(new_position) == True:
                 # 2.1 a land square that already occupied by its side's animals
-                if (self.if_position_has_same_side_animal(self, moving_animal, new_position) == False):
-                    return (False, Hint2)
+                if self.if_position_has_same_side_animal(moving_animal, new_position):
+                    return False, Hint2
+
+                # Lion, Tiger: Jump / move
+                #      jump: have rat in river: ifCanMove = False
+                #            don't have rat: ifCanMove = T
+                #      move: higher rank enemy: itCanMove = False
+                #            else: ifCanMove = T
+                elif (moving_animal.getRank() == 7 or moving_animal.getRank() == 6):
+                    x, y = moving_animal.getPosition()
+                    if self.if_position_near_river(moving_animal.position) and action == "jump":
+                        if direction == "up":
+                           river_square = x, y + 1
+                        elif direction == "down":
+                            river_square = x, y-1
+                        elif direction == "right":
+                            river_square = x+1, y
+                        elif direction == "left":
+                            river_square = x-1, y
+                        if river_square in self.river_position:
+                            if river_square[0] == 1 or river_square[0] == 2:
+                                side_of_river = 'left'
+                                return (not self.if_rat_in_that_river(side_of_river), Hint6)
+                            else:
+                                side_of_river = 'right'
+                                return (not self.if_rat_in_that_river(side_of_river), Hint6)
+                        else:
+                            return False
+                    elif action == "move":
+                        return not self.if_position_has_higher_rank_enemy(moving_animal, new_position)
+
+                # Rat:
+                # Elephant:
+                # other animals
+                # check if the next step is not occupied by any other animals
+                if moving_animal.name[0] == 'u':
+                    if new_position not in [num.getPosition() for num in self.downAnimalList]:
+                        return True, Hint9
+                else:
+                    if new_position not in [num.getPosition() for num in self.upAnimalList]:
+                        return True, Hint9
+
+
+                # For all Animals, they're not allowed to move to:
+
+
 
                 # 2.2
                 # a. For Rat(1): if its original position is in River, it can't move to a square that already occupied by enemy Elephant(8)(Elephant belonged to any higher rank, case a) or enemy Rat(1), because it will be eaten by enemy Elephant(8) or enemy Rat(1).
@@ -123,26 +158,57 @@ class Model():
                         return (False, Hint4)
                     else:
                         return True
+                # 3.2 For Lion(7), Tiger(6): can move across the river  when there is NOT a Rat(1)(no matter friendly or enemy) in the river
+
+
+
+
+                        # ---------------------------------------------------------------------
+                        # if self.get_estimated_new_position(moving_animal, direction, action) == self.den_position:
+                        #     if moving_animal.name[0] == 'u':
+                        #         if self.get_estimated_new_position(moving_animal, direction, action) == (3, 8):
+                        #             return False, Hint8
+                        #         return True, Hint8
+                        #     if moving_animal.name[0] == 'd':
+                        #         if self.get_estimated_new_position(moving_animal, direction, action) == (3, 0):
+                        #             return False, Hint8
+                        #         return True, Hint8
+                        #
+                        # # 1 If the animal's next step in out of chessboard range
+                        # elif (self.if_move_out_of_range(new_position) == True):
+                        #     return (False, Hint1)
+                        #
+                        # # 2 If the animal's next step is in land:
+                        # elif self.if_next_step_in_land(new_position) == True:
+                        #     # For all Animals, they're not allowed to move to:
+                        #     # 2.1 a land square that already occupied by its side's animals
+                        #     if self.if_position_has_same_side_animal(moving_animal, new_position):
+                        #         return (False, Hint2)
+                        # if (moving_animal.getRank() != '8'):
+                        #     return (not self.if_position_has_higher_rank_enemy(moving_animal, new_position), Hint3)
+                        # ---------------------------------------------------------------------
                 # b. For all Animals except Elephant(8): a square that already occupied by enemies that have a higher rank.
                 elif (moving_animal.getRank() != '8'):
                     return (not self.if_position_has_higher_rank_enemy(moving_animal, new_position), Hint3)
                 # c. For Elephant(8): a square that already occupied by enemy Rat(1)
-                elif (moving_animal.getRank() == '8'):
-                    return (not self.if_position_has_enemy_Rat(moving_animal, new_position), Hint5)
+                elif moving_animal.getRank() == '8':
+                    return (not self.if_position_has_enemy_Rat(moving_animal, new_position), Hint4)
 
             # 3 If the animal's next step is in river:
             elif (self.if_next_step_in_river(new_position) == True):
-                # 3.1 For Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2): can't move across the river
+                # 3.1 For Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2): can't move into the river
                 if (
-                        moving_animal.getRank() == '8' or moving_animal.getRank() == '5' or moving_animal.getRank() == '4' or moving_animal.getRank() == '3' or moving_animal.getRank() == '2'):
-                    return (False, Hint6)
-                # 3.2 For Lion(7), Tiger(6): can move across the river  when there is NOT a Rat(1)(no matter friendly or enemy) in the river
-                elif (moving_animal.getRank() == '7' or moving_animal.getRank() == '6'):
-                    side_of_river = Squares.getRiverSide(new_position)
-                    return (not self.if_rat_in_that_river(side_of_river), Hint7)
+                        moving_animal.getRank() != 1):
+                    return (False, Hint5)
+                # # 3.2 For Lion(7), Tiger(6): can move across the river  when there is NOT a Rat(1)(no matter friendly or enemy) in the river
+                # elif (moving_animal.getRank() == 7 or moving_animal.getRank() == 6):
+                #     side_of_river = moving_animal.getRiverSide()
+                #     return (not self.if_rat_in_that_river(side_of_river), Hint6)
+                elif moving_animal.getRank() == 1:
+                    return True, None
 
             else:
-                return (True, Hint9)
+                return (True, Hint7)
             # 3.3 For Rat(1): can randomly go into the river
             # elif (self.getRank() == '1'):
             #     return (True, noHint)
@@ -150,6 +216,9 @@ class Model():
         except Exception:
             print(
                 "Error! Can't check whether the animal can move to next step. Pls check ifCanMove() in Model.py")
+
+    def if_position_near_river(self, pos: tuple) -> bool:
+        return True if pos in self.near_river_position else False
 
     def move(self, moving_animal: Animals, direction) -> None:
         '''
@@ -177,8 +246,10 @@ class Model():
         '''
         moving_animal.jumpOver(direction)
 
-    def if_new_position_has_enemy_that_can_be_eaten(self, moving_animal: Animals) -> bool:
-        '''
+
+
+    def if_new_position_has_enemy_that_can_be_eaten(self, moving_animal: Animals, direction: str, action: str) -> bool:
+        """
         1. Purpose: This function is used to check that if the new position where the animal move to has an enemy that it can eat.
         2. Function parameter: "moving_animal" is passed from Controller
         3. Return value: returns a boolean value, representing whether the new position has an enemy that can be eaten.
@@ -195,14 +266,19 @@ class Model():
             4)in Den
                 the side of the animal will win if the animal move to opponent's side.
                 Because in this case, the animal will not care eating enemy anymore
-        '''
+        """
+        position = moving_animal.position
         try:
             # 1 in Land
             if (moving_animal.ifInLand()):
                 # 1.1 All animals except Rat(1), can eat enemy that have the same/lower rank
                 position = moving_animal.getPosition()
                 if (moving_animal.getRank() != '1'):
-                    return not self.if_position_has_higher_rank_enemy(self, moving_animal, position)
+                    if self.if_position_has_enemy(moving_animal) == True and self.if_position_has_lower_rank_enemy(moving_animal):
+                        return True
+
+                    else:
+                        return False
 
                 # 1.2 Rat(1) can eat enemy Elephant(8) and Rat(1)
                 elif (moving_animal.getRank() == '1'):
@@ -215,7 +291,10 @@ class Model():
             # 2 in River
             elif (moving_animal.ifInRiver()):
                 # only Rat(1) will in River. In this case, it can eat enemy Rat(1).
-                return self.if_position_has_same_rank_enemy(self, moving_animal, position)
+                if (self.if_position_has_enemy(moving_animal) == True and self.if_position_has_same_rank_enemy(moving_animal, position) == True):
+                    return True
+                else:
+                    return False
 
             # 3 in Trap
             elif (moving_animal.ifInTrap()):
@@ -225,7 +304,7 @@ class Model():
                 return False
         except Exception:
             print(
-                "Error! Can't check whether the animal can eat enemy. Pls check ifCanEatEnemy()")
+                "Error! Can't check whether the animal can eat enemy. Pls check if_new_position_has_enemy_that_can_be_eaten()")
 
     def get_same_position_enemy(self, moving_animal: Animals) -> 'Animals':
         if moving_animal.name[0] == 'd':
@@ -254,7 +333,7 @@ class Model():
         '''
 
     def get_estimated_new_position(self, moving_animal: Animals, direction, action) -> tuple:
-        (x, y) = Animals.getPosition()
+        (x, y) = moving_animal.getPosition()
         if action == 'move':
             if direction == 'up':
                 return x, y + 1
@@ -319,8 +398,8 @@ class Model():
                     return True
             return False
         else:
-            for i in self.downAnimalList:
-                if i.position == position:
+            for i in self.upAnimalList:
+                if i.getPosition() == position:
                     return True
             return False
 
@@ -345,7 +424,7 @@ class Model():
                         return True
             return False
 
-        pass
+
 
     def if_position_has_lower_rank_enemy(self, moving_animal: Animals, position: tuple) -> bool:
         '''
@@ -384,7 +463,7 @@ class Model():
             a)For all Animals except Elephant(8): find if the position is already occupied by enemies that have a higher rank.
             b)For Elephant(8): find if the position is already occupied by enemy Rat(1)
         """
-        if (moving_animal.getRank() != '8'):
+        if moving_animal.getRank() != '8':
             # find if the position is already occupied by enemies that have a higher rank.
             if moving_animal.name[0] == 'u':
                 for i in self.downAnimalList:
@@ -401,6 +480,21 @@ class Model():
         else:
             return self.if_position_has_enemy_Rat(moving_animal, position)
 
+    def if_position_lower_or_empty(self, moving_animal: Animals) -> bool:
+        return self.if_position_has_lower_rank_enemy(moving_animal, moving_animal.position) or self.if_position_has_enemy( moving_animal)
+
+    def if_position_has_enemy(self, moving_animal: Animals) -> bool:
+        if moving_animal.name[0] == 'u':
+            for i in self.downAnimalList:
+                if i.position == moving_animal.position:
+                    return True
+            return False
+        else:
+            for i in self.upAnimalList:
+                if i.position == moving_animal.position:
+                    return True
+            return False
+
     def if_next_step_in_river(self, new_position: tuple) -> bool:
         """
         1. Purpose: check if the new position is in a river square
@@ -411,7 +505,7 @@ class Model():
         for i in self.river_position:
             if i == new_position:
                 return True
-            return False
+        return False
 
     def if_position_has_enemy_Elephant(self, moving_animal: Animals, position: tuple) -> bool:
         """
@@ -428,7 +522,7 @@ class Model():
             return False
 
         else:
-            for i in self.downAnimalList:
+            for i in self.upAnimalList:
                 if i.position == position and i.name == 'upside_Elephant':
                     return True
             return False
@@ -447,7 +541,7 @@ class Model():
             return False
 
         else:
-            for i in self.downAnimalList:
+            for i in self.upAnimalList:
                 if i.position == position and i.name == 'upside_Rat':
                     return True
             return False
@@ -466,15 +560,13 @@ class Model():
             return False
 
         else:
-            for i in self.downAnimalList:
+            for i in self.upAnimalList:
                 if i.position == position and i.name != 'upside_Rat' and i.rank < moving_animal.rank:
                     return True
             return False
 
-
     def if_rat_in_that_river(self, side_of_river: str):
-        if self.downAnimalList[0].getRiverSide() == side_of_river or self.upAnimalList[
-            0].getRiverSide() == side_of_river:
+        if self.downAnimalList[0].getRiverSide() == side_of_river or self.upAnimalList[0].getRiverSide() == side_of_river:
             return True
         return False
 
