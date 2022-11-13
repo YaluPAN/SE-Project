@@ -74,6 +74,17 @@ class Model():
         Hint6 = 6
         Hint7 = 7
         Hint8 = 8
+        Hint9 = 9
+
+        # Hint1: Can't move to next step since it's out of chessboard range
+        # Hint2: Can't move to next step since it's occupied by your side's animals
+        # Hint3: Can't move to next step since it's occupied by higher rank enemy
+        # Hint4: The rat can't move to next step since the square is occupied by enemy rat
+        # Hint5: The elephant can't move to next step since the square is occupied by enemy rat
+        # Hint6: Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river
+        # Hint7: Lion(7), Tiger(6) can't move across the river since there is a rat in the river now
+        # Hint8: Can't move to next step since it's your side's den 
+        # Hint9: The animal can move to next step (successful hint)
 
         # get the estimated new position of the animal. This position is NOT the real position of animals, but an estimated one, which is used for validating purpose.
         try:
@@ -87,6 +98,9 @@ class Model():
                     if self.get_estimated_new_position(moving_animal, direction, action) == (3, 0):
                         return False, Hint8
                     return True, Hint8
+
+            
+
 
             # 1 If the animal's next step in out of chessboard range
             elif (self.if_move_out_of_range(new_position) == True):
@@ -114,21 +128,21 @@ class Model():
                     return (not self.if_position_has_higher_rank_enemy(moving_animal, new_position), Hint3)
                 # c. For Elephant(8): a square that already occupied by enemy Rat(1)
                 elif (moving_animal.getRank() == '8'):
-                    return (not self.if_position_has_enemy_Rat(moving_animal, new_position), Hint4)
+                    return (not self.if_position_has_enemy_Rat(moving_animal, new_position), Hint5)
 
             # 3 If the animal's next step is in river:
             elif (self.if_next_step_in_river(new_position) == True):
                 # 3.1 For Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2): can't move across the river
                 if (
                         moving_animal.getRank() == '8' or moving_animal.getRank() == '5' or moving_animal.getRank() == '4' or moving_animal.getRank() == '3' or moving_animal.getRank() == '2'):
-                    return (False, Hint5)
+                    return (False, Hint6)
                 # 3.2 For Lion(7), Tiger(6): can move across the river  when there is NOT a Rat(1)(no matter friendly or enemy) in the river
                 elif (moving_animal.getRank() == '7' or moving_animal.getRank() == '6'):
                     side_of_river = Squares.getRiverSide(new_position)
-                    return (not self.if_rat_in_that_river(side_of_river), Hint6)
+                    return (not self.if_rat_in_that_river(side_of_river), Hint7)
 
             else:
-                return (True, Hint7)
+                return (True, Hint9)
             # 3.3 For Rat(1): can randomly go into the river
             # elif (self.getRank() == '1'):
             #     return (True, noHint)

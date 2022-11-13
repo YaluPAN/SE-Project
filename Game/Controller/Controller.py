@@ -16,6 +16,7 @@ matchers = {
     "elephant": 8
 }
 
+
 class Controller:
     """
     initialization for objects of controller class
@@ -61,8 +62,6 @@ class Controller:
             return self.chooseSide(turnflag)
         return turnflag
 
-
-
     def executeInput(self, turnFlag: int) -> int:
         """
         processor for commands (user input). A boolean flag of a player's turn will be received to judge whether it
@@ -78,13 +77,12 @@ class Controller:
         else:
             self.gamer = self.game_model.upAnimalList
 
-
-
         inputs: list = input(
             "Please input your commands: ").split()
         if inputs[0] == "move" or inputs[0] == "jumpOver":
             ranks = self.gamer[matchers[inputs[1].lower()]]
-            if self.ifEnd(self.gamer[ranks], inputs[1: ]): self.finalPrint(turnFlag)
+            if self.ifEnd(self.gamer[ranks], inputs[1:]):
+                self.finalPrint(turnFlag)
             if not self.game_model.ifCanMove(inputs[1], inputs[2])[0]:
                 return self.executeInput(turnFlag)
 
@@ -106,8 +104,6 @@ class Controller:
         else:
             Exception("Input wrong, system will stop")
 
-
-
     '''
     checkMove() checks whether a move of the chess has exceeded the border of the chessboard.
     the parameter cmd stores player's move command with 4 possible directions: l, r, down, up.
@@ -126,10 +122,6 @@ class Controller:
     return: a boolean variable for checking the an withdrawal was made.
     '''
 
-    def Undo(self, turnFlag):
-
-        return False
-
     def commandRecord(self, inputs: str) -> None:
         with open(r"/History.txt", "a+") as file:
             file.write(inputs + "\n")
@@ -146,8 +138,8 @@ class Controller:
     '''
 
     def AdmitDefeat(self, turnFlag: int):
-        if input("you will admit your defeat and surrender to your opponent, please confirm again: ").lower() in ["y","yes"]:
-            print("player ", 2 - turnFlag, " win this game! ")
+        if input("you will admit your defeat and surrender to your opponent, please confirm again: ").lower() in ["y", "yes"]:
+            # print("player ", 2 - turnFlag, " win this game! ")
             self.finalPrint(turnFlag)
         return
 
@@ -156,7 +148,7 @@ class Controller:
     return: None
     '''
 
-    def Exit(self, turnFalg):
+    def Exit(self, turnFlag):
         print("""
         WARNING!!!
         Be aware that the whole system will immediately shut down and stopping recording, \n
@@ -164,7 +156,7 @@ class Controller:
         """)
         if input("Confirm exit?").lower() in ["y", "yes"]:
             print("Have a good day and see you next time! :)")
-            self.finalPrint(turnFalg)
+            self.finalPrint(turnFlag)
         return
 
     '''
@@ -177,7 +169,10 @@ class Controller:
         elif oneSide.name[0:2].lower() == "do":
             return self.game_model.upAnimalList
 
-    def all_dead(self, moving) -> bool:
+    '''
+    Check whether one side of animals are dead
+    '''
+    def all_dead(self, moving) -> bool: 
         opponent = self.returnOpponent(moving)
         aside: int = 0
         for val in opponent:
@@ -195,7 +190,6 @@ class Controller:
             return True
         return False
 
-
     '''
     Count the time for current user's round with the limit of 60 seconds.
     return type: None
@@ -209,4 +203,3 @@ class Controller:
                 print("10 seconds left.")
         print("Time expired, your turn finished.")
         time.sleep(1)  # 时间倒计时
-

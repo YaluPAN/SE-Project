@@ -2,7 +2,7 @@ import sys
 import os
 
 from Model import Model
-import Chess
+
 
 
 class View():
@@ -12,7 +12,7 @@ class View():
     substrings '[xx]' represents the location on board (e.g. '[64]' represents location = (6,4)).
     Traps and nests are marked by texts, and two river pools are marked by slashes.
     strings representing each animal chess and vacant places are stored for generating the chessboard according to players' status.
-    
+
     return: None
     """
 
@@ -62,7 +62,7 @@ class View():
 
     '''
     This function displays a welcome message in the interface before the game sta
-    ts. The welcome message includes a welcome sentence, a system brief introducti
+    ts. The welcome message includes a welcome sentence, a system brief introduction
     on, a game rules description, and a brief user manual. 
     
     return: None
@@ -85,7 +85,8 @@ class View():
     def printChessboard(self, player1: Model.Players, player2: Model.Players):
         _gameboard = self.gameboard
         for animal_i in player1:
-            repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
+            repl_str = "[" + str(animal_i.position[0]) + \
+                str(animal_i.position[1]) + "]"
 
             if (animal_i.name == "Lion"):
                 _gameboard.replace(repl_str, self.lion_str)
@@ -105,7 +106,8 @@ class View():
                 _gameboard.replace(repl_str, self.rat_str)
 
         for animal_i in player2:
-            repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
+            repl_str = "[" + str(animal_i.position[0]) + \
+                str(animal_i.position[1]) + "]"
 
             if (animal_i.name == "Lion"):
                 _gameboard.replace(repl_str, self.lion_str)
@@ -165,12 +167,17 @@ class View():
     '''
 
     def printHints(self, hintNum):  # hintNum:
-        hintsList = ["Only rats are allowed to jump to the water square.",  # 0
-                     "Opponent rats cannot attack each other unless they are both in the water/on the land.",  # 1
-                     "The Tiger/Lion cannot crossed the river since rat intervenes on the way.",  # 2
-                     "Rats cannot attack opponents directly if they are in different kinds of squares.",  # 3
-                     "Rank of the attacking opponent is higher than your chess",  # 4
-                     "Chess out of border."]
+        hintsList = [" Can't move to next step since it's out of chessboard range",  # Hint1
+                     " Can't move to next step since it's occupied by your side's animals",  # Hint2
+                     " Can't move to next step since it's occupied by higher rank enemy",  # Hint3
+                     " The rat can't move to next step since the square is occupied by enemy rat",  # Hint4
+                     " The elephant can't move to next step since the square is occupied by enemy rat",  # Hint5
+                     # Hint6
+                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river",
+                     # Hint7
+                     " Lion(7), Tiger(6) can't move across the river since there is a rat in the river now",
+                     " Can't move to next step since it's your side's den ",  # Hint8
+                     " The animal can move to next step (successful hint)"]  # Hint9
         print(hintsList[hintNum])
 
     '''
