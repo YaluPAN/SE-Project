@@ -1,7 +1,7 @@
 import sys
 import os
 
-from Model import Model
+from Game.Model.Model import Model
 
 
 
@@ -68,10 +68,10 @@ class View():
     return: None
     '''
 
-    def printWelcomePage():
+    def printWelcomePage(self):
         print("        WELCOME TO JUNGLE GAME DEVELOPED BY GRP3        ")
 
-    def askPreference():
+    def askPreference(self):
         print()
 
     '''
@@ -132,7 +132,7 @@ class View():
     return: None
     '''
 
-    def printHelp():
+    def printHelp(self):
         helpMenu = """
                         -SELECT THE GAME INFO YOU WANT TO REFER-
         1. Rank of the chess    2. Square categories    3. 
@@ -185,7 +185,7 @@ class View():
 
     '''
 
-    def printTiming():
+    def printTiming(self):
 
         print()
 
@@ -197,7 +197,7 @@ class View():
     return: None
     '''
 
-    def printMoveHistory():
+    def printMoveHistory(self):
 
         print()
 
