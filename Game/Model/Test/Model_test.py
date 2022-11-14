@@ -15,32 +15,41 @@ class ChessboardTest(unittest.TestCase):
         self.md = md.Model()
     def test_ifCanMove(self):
         """
-        There are totally 5 situations when an Animal Chess is moved:
-            a)The animal's next step in out of chessboard range
-            b)The animal's next step is on land
-                i) a rat is going to jump out of river
-                    1) there is no animals on the rat's next step
-                    2) there is an animal in front its way
+        There are two major branch for the animal move direction branch:
+        1. move animal direction
+        ::first test when an animal is near water, if the next step is in water, whether it move into water: rat
+        and other animal
+        for rat also test if the moving position has another rat, it can't go(when enter river)
+        also test when two rat in river, you can eat each other ot not.
+        also test whether a rat in river can eat the land elephant
+        then test when the animal's next direction is in land, then it can move or not:
+        1. the position is out of range
+        2. the self den
+        3. empty
+        4. same side animal
+        5. different side but lower or same rank
+        6. different side but higher rank(not in trap)
+        7. different side but higher rank(in trap)
 
-                ii) will be tested in test_if_new_position_has_enemy_that_can_be_eaten()
-                ii) an animal is going to capture another opponent animal
-                    1) common rule
-                    2) rat eat an elephant
 
-                iii) a push ,backup, left move or right move
-                    1) the same side animal blocked the way
-            c)The animal's next step is in River
 
-                i) will be tested in test_if_new_position_has_enemy_that_can_be_eaten()
-                i) rat in river
-                    1) rat swim in river
-                    2) rat in river going to capture another river
+        2. jump animal direction
 
-                ii) a lion, tiger will jump over a rat
-                    1) they cannot jump over the river when a rat in the same river
-                iii) other animals cannot attack a rat in river
-        :return:
-        """
+        first test whether they can jump(has this ability)
+        then test if they are near river
+        then for lion and tiger, test whether they can jump when a rat in the same side river
+        and when a rat in another river
+        also test if the jump position is empty
+        test if the jump position has same side animal
+        test if the jump position has different side animal with 1. higher rank, 2 same or lower rank
+
+
+
+
+
+
+
+
         mock = Mock()
 
         # test for a
