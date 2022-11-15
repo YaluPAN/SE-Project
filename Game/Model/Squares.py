@@ -17,7 +17,6 @@ class Squares:
 
 
 
-
     def get_den_position(self) -> list:
         # get den squares position, return a list of den position which is represented in tuple (x,y)
         return self.den_position
@@ -29,21 +28,6 @@ class Squares:
     def get_river_position(self) -> list:
         # get river squares position, return a list of river position which is represented in tuple (x,y)
         return self.river_position
-
-    def getRiverSide(self) -> str:
-        for i in self.river_position:
-            if i == self.position:
-                if i[0] == 1 or i[0] == 2:
-                    return 'left'
-                else:
-                    return 'right'
-        '''
-        1. This function is used to get the river side based on a specific square position.
-        2. Function parameter: "square_position" is passed from get_new_estimated_position() in Model.
-        3. Return value: returns a str, ether 'left' or 'right'.
-        4. How to achieve: by iterating all river squares position, and find which on is the same as the "square_position"
-        '''
-
 
 
 
@@ -60,8 +44,26 @@ class Animals(Squares):
         self.name = name
         self.rank = rank
         self.position = position
-        self.status = True
+        self.status = status
 
+    def getRiverSide(self) -> str:
+        for i in self.river_position:
+            if i == self.position:
+                (x, y) = i
+
+                if x == 1 or x == 2:
+                    return 'left'
+                else:
+                    return 'right'
+
+        return 'no'
+
+        '''
+        1. This function is used to get the river side based on a specific square position.
+        2. Function parameter: "square_position" is passed from get_new_estimated_position() in Model.
+        3. Return value: returns a str, ether 'left' or 'right'.
+        4. How to achieve: by iterating all river squares position, and find which on is the same as the "square_position"
+        '''
 
     def change_status(self):
         self.status = False
