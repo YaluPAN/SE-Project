@@ -84,6 +84,7 @@ class View():
     def printChessboard(self, player1: list, player2: list):
         _gameboard = self.gameboard
         for animal_i in player1:
+            if not animal_i.status: continue
             repl_str = "[" + str(animal_i.position[0]) + str(animal_i.position[1]) + "]"
             # print(repl_str)
             if (animal_i.rank == 7):
@@ -147,7 +148,7 @@ class View():
 
         squareInfo = """
          ________        ________        ________        ________       
-        |        |      |////////|      | -NEST- |      | -TRAP- |
+        |        |      |////////|      | -DEN-  |      | -TRAP- |
         |        |      |////////|      |        |      |        |
         |________|      |++++++++|      |________|      |________|
          L A N D        W A T E R        N E S T         T R A P
@@ -218,16 +219,6 @@ class View():
     return: None
     '''
 
-    def printCapturedResult(self):
-        capturedResult = Model.getCapturedResult()
-        print(capturedResult)
-
-    '''
-    This function displays the game result about which player wins the game at the end of the game. 
-
-    return: None
-    '''
-
     def printGameResult(self, turnflag):
 
         print("Player ", turnflag % 2 + 1, "wins the game!")
@@ -236,4 +227,3 @@ class View():
 
 if __name__ == "__main__":
     view = View()
-    view.printChessboard()

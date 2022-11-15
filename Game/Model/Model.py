@@ -16,23 +16,23 @@ class Model():
     # initialize a new Chessboard
     def __init__(self):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
-        downside_Rat = Animals("downside_Rat", 1, (5, 3), True)  # (6, 2)
+        downside_Rat = Animals("downside_Rat", 1, (1, 5), True)  # (6, 2)
         downside_Cat = Animals("downside_Cat", 2, (1, 1), True)
         downside_Dog = Animals("downside_Dog", 3, (5, 1), True)
         downside_Wolf = Animals("downside_Wolf", 4, (2, 2), True)
         downside_Leopard = Animals("downside_Leopard", 5, (4, 2), True)
-        downside_Tiger = Animals("downside_Tiger", 6, (0, 0), True)
+        downside_Tiger = Animals("downside_Tiger", 6, (0, 3), True) # (0, 0)
         downside_Lion = Animals("downside_Lion", 7, (6, 0), True)
         downside_Elephant = Animals(
             "downside_Elephant", 8, (0, 2), True)
 
-        upside_Rat = Animals("upside_Rat", 1, (0, 6), True)
+        upside_Rat = Animals("upside_Rat", 1, (2, 5), True)  # (0, 6)
         upside_Cat = Animals("upside_Cat", 2, (5, 7), True)
         upside_Dog = Animals("upside_Dog", 3, (1, 7), True)
         upside_Wolf = Animals("upside_Wolf", 4, (4, 6), True)
         upside_Leopard = Animals("upside_Leopard", 5, (2, 6), True)
-        upside_Tiger = Animals("upside_Tiger", 6, (6, 8), True)
-        upside_Lion = Animals("upside_Lion", 7, (3, 3), True)  # (0, 8)
+        upside_Tiger = Animals("upside_Tiger", 6, (0, 4), True)  # (6, 8)
+        upside_Lion = Animals("upside_Lion", 7, (0, 8), True)  # (0, 8)
         upside_Elephant = Animals("upside_Elephant", 8, (6, 6), True)
 
         downAnimalList = [downside_Rat, downside_Cat, downside_Dog,
@@ -56,7 +56,8 @@ class Model():
         self.river_position = river_position
         self.near_river_position = near_river_position
 
-    def ifCanMove(self, moving_animal: Animals, direction, action) -> tuple:
+
+    def ifCanMove(self, moving_animal: Animals, direction, action) -> bool:
         '''
         1. Purpose: This function is used to check whether the animal can move to next step.
         2. Function parameters: "moving_animal" and "direction" are parameters that passed from Controller
@@ -89,6 +90,7 @@ class Model():
                 return False
 
             elif moving_animal.getRank() == 7 or moving_animal.getRank() == 6:
+                original_position = moving_animal.getPosition()
                 if action == 'move':
 
                     if self.if_position_in_river(estimated_new_position):
@@ -134,11 +136,44 @@ class Model():
                                 return False
 
                 else:  # (action == 'jump')
-                    if self.if_position_in_river(estimated_new_position):
-                        # 老虎jump, 下一步不可能是河, 不可move
-                        return False
+                    if self.if_position_near_river(original_position):
+                        if direction == 'up':
+                            (x, y) = original_position
+                            new_position = (x, y+1)
+                        elif direction == 'down':
+                            (x, y) = original_position
+                            new_position = (x, y-1)
+                        elif direction == 'left':
+                            (x, y) = original_position
+                            new_position = (x-1, y)
+                        elif direction == 'right':
+                            (x, y) = original_position
+                            new_position = (x+1, y)
+                        if self.if_position_in_river(new_position):
+                            if self.get_river_side(new_position) == 'left':
+                                if self.if_rat_in_that_river('left'):
+                                    return False
+                                else:
+                                    if self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                                        return False
 
-                    elif self.if_position_in_land(estimated_new_position):
+                                    elif self.if_position_is_empty(estimated_new_position) or self.if_position_has_lower_rank_enemy(moving_animal, estimated_new_position):
+                                        return True
+                                    return False
+                            elif self.get_river_side(new_position) == 'right':
+                                if self.if_rat_in_that_river('right'):
+                                    return False
+                                else:
+                                    if self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                                        return False
+                                    elif self.if_position_is_empty(estimated_new_position) or self.if_position_has_lower_rank_enemy(moving_animal, estimated_new_position) :
+                                        return True
+                                    return False
+                        else:
+                            return False
+                    else:
+                        return False
+                    '''elif self.if_position_in_land(estimated_new_position):
                         # 老虎jump, 下一步是陆地
                         #    如果下一步没任何动物：可move
                         #    如果下一步有低阶敌人：可move
@@ -151,10 +186,12 @@ class Model():
 
                     elif self.if_position_in_trap(estimated_new_position) or self.if_position_in_den(estimated_new_position):
                         # 老虎jump, 下一步不可能是陷阱或兽窝，不可move
-                        return False
+                        return False'''
 
             elif moving_animal.getRank() == 1:
                 original_position = moving_animal.getPosition()
+                if action == 'jump':
+                    return False
                 if self.if_position_in_river(estimated_new_position):
                     # 老鼠下一步是河：
                     #     如果老鼠从河到河：
@@ -210,7 +247,10 @@ class Model():
                     # 老鼠下一步是兽窝：
                     #    如果兽窝是自己方的：不可move
                     #    如果兽窝是别方的，可move
-                    if moving_animal.name[0] == 'u':
+                    if self.if_in_opposite_den(moving_animal, direction, action):
+                        return True
+                    return False
+                    '''if moving_animal.name[0] == 'u':
                         if estimated_new_position == self.den_position[0]:
                             # self.den_position[0] = (3,0)
                             return True
@@ -221,13 +261,14 @@ class Model():
                             # self.den_position[1] = (3,8)
                             return True
                         else:
-                            return False
+                            return False'''
 
             elif moving_animal.getRank() == 8:
                 if self.if_position_in_river(estimated_new_position):
                     # 大象下一步是河，不可move
                     return False
-
+                elif action == 'jump':
+                    return False
                 elif self.if_position_in_land(estimated_new_position):
                     # 大象下一步是陆地
                     #     如果没有遇到任何动物：可move
@@ -253,7 +294,10 @@ class Model():
                     # 大象下一步是兽窝：
                     #    如果兽窝是自己方的：不可move
                     #    如果兽窝是别方的，可move
-                    if moving_animal.name[0] == 'u':
+                    if self.if_in_opposite_den(moving_animal, direction, action):
+                        return True
+                    return False
+                    '''if moving_animal.name[0] == 'u':
                         if estimated_new_position == self.den_position[0]:
                             # self.den_position[0] = (3,0)
                             return True
@@ -264,10 +308,11 @@ class Model():
                             # self.den_position[1] = (3,8)
                             return True
                         else:
-                            return False
+                            return False'''
 
             else:  # 剩余的都是其他动物
-
+                if action == 'jump':
+                    return False
                 if self.if_position_in_river(estimated_new_position):
                     # 其他动物下一步是河，不可move
                     return False
@@ -322,19 +367,28 @@ class Model():
             return False
 
     def if_position_in_den(self, position: tuple) -> bool:
+
         if position in self.den_position:
             return True
         else:
             return False
 
     def if_position_is_empty(self, position: tuple) -> bool:
-        if position in self.downAnimalList:
-            return False
-        elif position in self.upAnimalList:
-            return False
-        else:
-            return True
+        for i in self.downAnimalList:
+            if i.position == position:
+                return False
+        for i in self.upAnimalList:
+            if i.position == position:
+                return False
+        return True
 
+    def get_river_side(self, position):
+        for i in self.river_position:
+            if i == position:
+                if i[0] == 1 or i[0] == 2:
+                    return 'left'
+                else:
+                    return 'right'
     def if_position_near_river(self, pos: tuple) -> bool:
         return True if pos in self.near_river_position else False
 
@@ -501,15 +555,15 @@ class Model():
             print(
                 "Error! Can't check whether the animal can eat enemy. Pls check if_new_position_has_enemy_that_can_be_eaten()")
 
-    def get_same_position_enemy(self, moving_animal: Animals) -> 'Animals':
+    def get_same_position_enemy(self, moving_animal: Animals) -> Animals:
         if moving_animal.name[0] == 'd':
             for i in self.upAnimalList:
                 if i.position == moving_animal.position:
-                    return i.name
+                    return i
         else:
             for i in self.upAnimalList:
                 if i.position == moving_animal.position:
-                    return i.name
+                    return i
 
         '''
         1. Purpose: This function is used only when if_new_position_has_enemy_that_can_be_eaten() is True. Because it's confirmed that the animal has moved to the square that has enemy pieces that it can eat, this func will search the exact enemy piece that will be eaten
@@ -576,8 +630,15 @@ class Model():
         4. How to achieve: by iterating all land squares positions in a chessboard, and check whether the "position" is same as one of them
         """
         for i in self.river_position:
-            if new_position == i:
+            if position == i:
                 return False
+        for i in self.trap_position:
+            if position == i:
+                return False
+        for i in self.den_position:
+            if position == i:
+                return False
+
         return True
 
     def if_position_has_same_side_animal(self, moving_animal: Animals, position: tuple) -> bool:
@@ -696,7 +757,7 @@ class Model():
         4. How to achieve: by iterating all river squares positions in a chessboard, and check whether the "position" is same as one of them
         """
         for i in self.river_position:
-            if i == new_position:
+            if i == position:
                 return True
         return False
 

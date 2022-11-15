@@ -3,7 +3,6 @@ import sys
 import Game.Model.Model as model
 from Game.View.View import View
 from Game.Model.Squares import Animals as anim
-import time
 
 matchers = {
     "rat": 1,
@@ -16,12 +15,6 @@ matchers = {
     "elephant": 8
 }
 
-"""
-    1. Exception in program Processing
-    2. how to define the ifEnd()
-    3. call view
-    4. change turnFlag to local variable
-"""
 
 class Controller:
     """
@@ -42,6 +35,7 @@ class Controller:
         modify turnFlag to decide who starts first
         """
         inputs: str = input("Please choose your preferred side: ")
+        print(inputs)
         if inputs.lower() == "up":
             self.turnFlag = 1
         elif inputs.lower() == "down":
@@ -56,6 +50,12 @@ class Controller:
             self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList)
             self.processing()
             self.turnFlag += 1
+        self.finalPrint()
+
+    def wordProcess(self, inputs: list) -> bool:
+        if inputs[1].lower() not in matchers.keys() or inputs[2].lower() not in ["left", "right", "up", "down"]:
+            return False
+        return True
 
     def processing(self) -> int:
         """
@@ -74,19 +74,23 @@ class Controller:
 
         inputs: list = input(
             "Please input your commands: ").split()
-        if inputs[0] == "move" or inputs[0] == "jumpOver":
-            moving = self.gamer[matchers[inputs[1].lower()]]
-            if self.ifEnd(moving, inputs[1:]): self.finalPrint()
-            potential = self.game_model.ifCanMove(moving, inputs[2], inputs[0])
-            if not potential[0]:
-                self.game_view.printHints(potential[1])
+        if inputs[0] == "move" or inputs[0] == "jump":
+            if not self.wordProcess(inputs):
+                print("Please correctly spell the words.")
+                return self.processing()
+            direction, action = inputs[2], inputs[0]
+            moving = self.gamer[matchers[inputs[1].lower()] - 1]
+            if self.ifEnd(moving, direction, action): self.finalPrint()
+            potential = self.game_model.ifCanMove(moving, direction, action)
+            if not potential:
+                # self.game_view.printHints(potential)
                 return self.processing()
 
-            if inputs == "move":
-                self.game_model.move(moving, inputs[2])
-            elif inputs == "jumpOver":
-                self.game_model.jumpOver(moving, inputs[2])
-            if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving):
+            if inputs[0] == "move":
+                self.game_model.move(moving, direction)
+            elif inputs[0] == "jump":
+                self.game_model.jumpOver(moving, direction)
+            if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving, direction, action):
                 opponent: anim = self.game_model.get_same_position_enemy(moving)
                 self.game_model.die(opponent)
             self.commandRecord(" ".join(inputs))
@@ -100,24 +104,6 @@ class Controller:
         else:
             Exception("Input wrong, system will stop")
 
-    '''
-    checkMove() checks whether a move of the chess has exceeded the border of the chessboard.
-    the parameter cmd stores player's move command with 4 possible directions: l, r, down, up.
-    The size of the board is 9*7 thus the vertical range should be [0, 8] and the horizontal should be [0, 6].
-    return: A boolean variable identifying the move is legal or not
-    '''
-
-    def getHelp(self):
-        """do we still need this?"""
-        pass
-
-    '''
-    Function handling undo processes.
-    If an undo request is confirmed by input "y", check the number of previous undos. If already done 3 times then the request will not be granted.
-    If less than 3 times, ask for the other player's permission. If agreed, withdraw the player's move.
-    return: a boolean variable for checking the an withdrawal was made.
-    '''
-
     def commandRecord(self, inputs: str) -> None:
         with open(r"/History.txt", "a+") as file:
             file.write(inputs + "\n")
@@ -125,27 +111,24 @@ class Controller:
 
     def finalPrint(self):
         self.game_view.printGameResult(self.turnFlag)
-        self.game_view.printCapturedResult()
         sys.exit()
 
-    '''
-    function to handle the user's surrender request.
-    return: a boolean variable.
-    '''
-
     def AdmitDefeat(self):
+        """
+        function to handle the user's surrender request.
+        return: a boolean variable.
+        """
         if input("you will admit your defeat and surrender to your opponent, please confirm again: ").lower() in ["y",
                                                                                                                   "yes"]:
             print("player ", 2 - (self.turnFlag % 2), " win this game! ")
             self.finalPrint()
         return
 
-    '''
-    Function to exit the game after having the players' final confirmation.
-    return: None
-    '''
-
     def Exit(self):
+        """
+        Function to exit the game after having the players' final confirmation.
+        return: None
+        """
         print("""
         WARNING!!!
         Be aware that the whole system will immediately shut down and stopping recording, \n
@@ -156,47 +139,32 @@ class Controller:
             self.finalPrint()
         return
 
-    '''
-    return: a boolean variable judging whether the game ends.
-    '''
-
     def returnOpponent(self, oneSide: anim) -> list:
+        """
+        return: a boolean variable judging whether the game ends.
+        """
         if oneSide.name[0:2].lower() == "up":
             return self.game_model.downAnimalList
         elif oneSide.name[0:2].lower() == "do":
             return self.game_model.upAnimalList
 
-    '''
-    Check whether one side of animals are dead
-    '''
-
     def all_dead(self, moving) -> bool:
+        """
+        Check whether one side of animals are dead
+        """
+
         opponent = self.returnOpponent(moving)
         aside: int = 0
         for val in opponent:
             aside += 1 if not val.status else 0
         return False if aside != 8 else True
 
-    def ifEnd(self, moving: anim, inputs: list) -> None:
+    def ifEnd(self, moving: anim, direction: str, action: str) -> None:
         """
         1. in den
         2. in side all dead
         """
-        if self.game_model.if_in_opposite_den(moving, inputs[0], inputs[1]):
+        if self.game_model.if_in_opposite_den(moving, direction, action):
             self.exit = True
         elif self.all_dead(moving):
             self.exit = True
-
-    '''
-    Count the time for current user's round with the limit of 60 seconds.
-    return type: None
-    '''
-
-    def time_spire(self):
-        available_second = 60
-        for i in range(1, available_second):
-            print('you have %d seconds' % (available_second - i))
-            if available_second - i == 10:
-                print("10 seconds left.")
-        print("Time expired, your turn finished.")
-        time.sleep(1)  # 时间倒计时

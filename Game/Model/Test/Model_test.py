@@ -1,105 +1,165 @@
 import unittest
 import sys
 import pathlib
+import Game.Model.Model as md
 
 path = str(pathlib.Path(__file__).parent.resolve())
 path = "\\".join(path.split("\\")[:-2])
 sys.path.append(path)
-import Game.Model.Model as md
-from unittest.mock import MagicMock
-from unittest.mock import Mock
 
 
 class ChessboardTest(unittest.TestCase):
-
     def setUp(self) -> None:
         self.md = md.Model()
 
+    def test_if_position_is_empty(self):
+        up_rat = self.md.upAnimalList[0]
+        up_rat.position = (1, 2)
+        result = self.md.if_position_is_empty(up_rat.position)
+        self.assertEqual(result, False)
+        result = self.md.if_position_is_empty((2, 1))
+        self.assertEqual(result, True)
+
+    def test_if_position_in_river(self):
+
+        self.assertEqual(self.md.if_position_in_river((2, 2)), False)
+        self.assertEqual(self.md.if_position_in_river((2, 3)), True)
+
     def test_ifCanMove(self):
-        """
-        There are totally 5 situations when an Animal Chess is moved:
-            a)The animal's next step in out of chessboard range
-            b)The animal's next step is on land
-                i) a rat is going to jump out of river
-                    1) there is no animals on the rat's next step
-                    2) there is an animal in front its way
+        #     for move
+        up_rat = self.md.upAnimalList[0]
+        up_rat.position = (1, 2)
+        result = self.md.ifCanMove(up_rat, 'up', 'move')  # rat can enter river when empty
+        self.assertEqual(result, True)
+        up_cat = self.md.upAnimalList[1]
+        up_cat.position = (2, 2)
+        result = self.md.ifCanMove(up_cat, 'up', 'move')  # cat can not enter river
+        self.assertEqual(result, False)
+        down_rat = self.md.downAnimalList[0]
+        down_rat.position = (1, 3)
+        result = self.md.ifCanMove(up_rat, 'up', 'move')
+        # rat can not eat another rat when in land and another rat in river
+        self.assertEqual(result, False)
+        up_rat.position = (1, 4)
+        result = self.md.ifCanMove(up_rat, 'down', 'move')
+        # rat can eat another rat when all in the river
+        self.assertEqual(result, True)
+        up_elephant = self.md.upAnimalList[7]
+        up_elephant.position = (3, 3)
+        down_rat.position = (2, 3)
+        self.assertEqual(self.md.get_estimated_new_position(down_rat, 'right', 'move'), (3, 3))
+        # rat can not eat elephant at land when it at river
+        result = self.md.ifCanMove(down_rat, 'right', 'move')
+        self.assertEqual(result, False)
+        up_tiger = self.md.upAnimalList[5]
+        up_tiger.position = (0, 5)
+        # test whether move out of range
+        result = self.md.ifCanMove(up_tiger, 'left', 'move')
+        self.assertEqual(result, False)
+        up_elephant.position = (5, 0)
+        down_rat.position = (5, 1)
+        # test whether rat can eat elephant when both in land
+        result = self.md.ifCanMove(down_rat, 'down', 'move')
+        self.assertEqual(result, True)
+        up_elephant.position = (2, 8)
+        # test whether animal can enter itself den
+        result = self.md.ifCanMove(up_elephant, 'right', 'move')
+        self.assertEqual(result, False)
+        up_elephant.position = (2, 0)
+        # test whether animal can enter enemy's den
+        result = self.md.ifCanMove(up_elephant, 'right', 'move')
+        self.assertEqual(result, True)
+        down_rat.position = (5, 2)
+        # test when empty whether can move
+        result = self.md.ifCanMove(down_rat, 'right', 'move')
+        self.assertEqual(result, True)
+        up_tiger.position = (5, 3)
+        # test a lower enemy can be eaten
+        result = self.md.ifCanMove(up_tiger, 'down', 'move')
+        self.assertEqual(result, True)
+        # test whether a higher enemy can be eaten (not in trap)
+        result = self.md.ifCanMove(down_rat, 'up', 'move')
+        self.assertEqual(result, False)
+        # test whether a higher enemy in trap can be eaten
+        up_tiger.position = (4, 0)
+        down_rat.position = (4, 1)
+        result = self.md.ifCanMove(down_rat, 'down', 'move')
+        self.assertEqual(result, True)
+        up_elephant.position = (0, 2)
+        up_cat.position = (1, 2)
+        # test can eat same side animal
+        result = self.md.ifCanMove(up_elephant, 'left', 'move')
+        self.assertEqual(result, False)
+        # for jump
+        up_elephant.position = (1, 2)
+        up_cat.position = (0, 0)
+        up_wolf = self.md.upAnimalList[3]
+        up_wolf.position = (0, 1)
+        up_rat.position = (4, 3)
+        up_tiger.position = (2, 2)
+        down_rat.position = (0, 8)
+        down_wolf = self.md.downAnimalList[3]
+        down_wolf.position = (1, 0)
+        # test whether animal can jump over river when no rat in that river
+        result = self.md.ifCanMove(up_elephant, 'up', 'jump')
+        self.assertEqual(result, False)
+        # test whether a tiger can jump over river with a incorrect direction
+        result = self.md.ifCanMove(up_tiger, 'down', 'jump')
+        self.assertEqual(result, False)
+        # test whether a tiger can jump over river with a correct direction
 
-                ii) will be tested in test_if_new_position_has_enemy_that_can_be_eaten()
-                ii) an animal is going to capture another opponent animal
-                    1) common rule
-                    2) rat eat an elephant
+        self.assertEqual(self.md.if_position_near_river((2, 2)), True)
+        self.assertEqual(self.md.if_position_in_river((2, 3)), True)
+        self.assertEqual(self.md.get_river_side((2, 3)),  "left")
+        self.assertEqual(down_rat.getRiverSide(), 'no')
+        self.assertEqual(up_rat.position, (4, 3))
+        self.assertEqual(up_rat.getRiverSide(), 'right')
+        self.assertEqual(self.md.if_rat_in_that_river('left'), False)
+        up_pump = self.md.upAnimalList[4]
+        up_pump.position = (1, 6)
+        self.assertEqual(self.md.if_position_is_empty((2, 6)), True)
+        self.assertEqual(self.md.if_position_has_same_side_animal(up_tiger, (2, 6)), False)
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy(up_tiger, (2, 6)), False)
+        result = self.md.ifCanMove(up_tiger, 'up', 'jump')
+        self.assertEqual(result, True)
+        up_rat.position = (1, 3)
+        # test whether a tiger can jump over river with a rat in that river
+        result = self.md.ifCanMove(up_tiger, 'up', 'jump')
+        self.assertEqual(result, False)
+        up_tiger.position = (3, 3)
+        # test whether a tiger can jump over river with right jump with no rat in that river
+        self.assertEqual(self.md.if_position_near_river((3, 3)), True)
+        self.assertEqual(self.md.if_position_in_river((4, 3)), True)
+        self.assertEqual(self.md.get_river_side((4, 3)), "right")
+        self.assertEqual(down_rat.getRiverSide(), 'no')
+        self.assertEqual(up_rat.position, (1, 3))
+        self.assertEqual(up_rat.getRiverSide(), 'left')
+        result = self.md.ifCanMove(up_tiger, 'right', 'jump')
+        self.assertEqual(result, True)
+        # test whether a tiger can jump over river with left jump with rat in that river
+        result = self.md.ifCanMove(up_tiger, 'left', 'jump')
+        self.assertEqual(result, False)
+        up_elephant.position = (6, 3)
+        # test whether a tiger can jump over river with a same side animal
+        result = self.md.ifCanMove(up_tiger, 'right', 'jump')
+        self.assertEqual(result, False)
+        up_elephant.position = (0, 5)
+        down_rat.position = (6, 3)
+        # test whether a tiger can jump over river with a lower rank enemy
+        result = self.md.ifCanMove(up_tiger, 'right', 'jump')
+        self.assertEqual(result, True)
+        down_rat.position = (0, 6)
+        down_elephant = self.md.downAnimalList[7]
+        down_elephant.position = (6, 3)
+        # test whether a tiger can jump over river with a higher rank enemy
+        result = self.md.ifCanMove(up_tiger, 'right', 'jump')
+        self.assertEqual(result, False)
 
-                iii) a push ,backup, left move or right move
-                    1) the same side animal blocked the way
-            c)The animal's next step is in River
-
-                i) will be tested in test_if_new_position_has_enemy_that_can_be_eaten()
-                i) rat in river
-                    1) rat swim in river
-                    2) rat in river going to capture another river
-
-                ii) a lion, tiger will jump over a rat
-                    1) they cannot jump over the river when a rat in the same river
-                iii) other animals cannot attack a rat in river
-        :return:
-        """
-        mock = Mock()
-
-        # test for a
-        rat1: md.Animals = self.md.downAnimalList[0]
-        self.md.get_estimated_new_position = MagicMock()
-        self.md.if_move_out_of_range = MagicMock()
-        self.assertEqual(self.md.ifCanMove(rat1, "right")[0], False)
-        # check self.md.get_estimated_new_position's call value
-        self.md.get_estimated_new_position.assert_called_with(rat1, "right")
-        self.md.if_move_out_of_range.assert_called_with((7, 2))
-
-        # test for b-i-1  get_estimated_new_position will be executed every time
-        # so here we won't test it
-        rat1.position = (1, 3)
-        self.assertEqual(self.md.ifCanMove(rat1, "left")[0], True)
-
-        # test for (False, Hint3)
-        cat1: md.Animals = self.md.downAnimalList[1]
-        rat2: md.Animals = self.md.upAnimalList[0]
-        rat2.position, cat1.position = (3, 6), (3, 5)
-        self.assertEqual(self.md.ifCanMove(rat2, "down")[0], False)
-
-        # test for (False, Hint4)
-        cat1.position, rat1.position = (1, 1), (3, 5)
-        self.assertEqual(self.md.ifCanMove(rat2, "down"), False)
-
-        rat1.position = (6, 2)
-        self.assertEqual(self.md.ifCanMove(rat2, "down"), True)
-
-        # test for b-i-2
+    def test_if_in_opposite_den(self):
         wolf1 = self.md.upAnimalList[3]
-        wolf1.position = (0, 3)
-
-        self.assertEqual(self.md.ifCanMove(rat1, "left")[0], False)
-
-        # test for b-iii
-        wolf1.position, rat1.position = (6, 3), (6, 2)
-        self.assertEqual(self.md.ifCanMove(rat1, "up")[0], False)
-
-        elephant = self.md.upAnimalList[7]
-        elephant.position = (6, 3)
-        self.assertEqual(self.md.ifCanMove(elephant, "down")[0], False)
-
-        # test for C-ii-1
-        dog1: md.Animals = self.md.downAnimalList[2]
-        dog1.position = (5, 2)
-        self.assertEqual(self.md.ifCanMove(dog1, "up"), False)
-
-        # test for C-iii
-        lion1: md.Animals = self.md.upAnimalList[6]
-        lion1.position, rat1.position = (2, 6), (2, 5)
-        self.assertEqual(self.md.ifCanMove(lion1, "down"), False)
-
-        # test for C-iii
-        lion1.position = (0, 8)
-        self.assertEqual(self.md.ifCanMove(lion1, "down"), True)
-        self.pointBackOri()
+        wolf1.position = (3, 7)
+        result = self.md.if_in_opposite_den(wolf1, 'up', 'move')
+        self.assertEqual(result, False)
 
     def test_if_new_position_has_enemy_that_can_be_eaten(self) -> None:
         """
@@ -136,7 +196,6 @@ class ChessboardTest(unittest.TestCase):
         elephant.position = (3, 0)
         self.assertEqual(elephant.ifInDen(), True)
         self.assertEqual(self.md.if_in_Den(elephant), True)
-        self.pointBackOri()
 
     def test_move(self) -> None:
         wolf1, rat1, leopard1 = self.md.downAnimalList[3], self.md.upAnimalList[0], self.md.downAnimalList[4]
@@ -149,7 +208,6 @@ class ChessboardTest(unittest.TestCase):
         self.assertEqual(leopard1.getPosition(), (4, 2))
         leopard1.move("left")
         self.assertEqual(leopard1.getPosition(), (3, 2))
-        self.pointBackOri()
 
     def test_jumpover(self) -> None:
         """
@@ -166,15 +224,12 @@ class ChessboardTest(unittest.TestCase):
         self.assertEqual(self.md.jumpOver(lion1, "left"), (3, 3))  # here, no rat at river!
         tiger1.position = (1, 6)
         self.assertEqual(self.md.jumpOver(tiger1, "down"), (1, 2))
-        self.pointBackOri()
 
-    def pointBackOri(self) -> None:
-        """this is not a test set, only to reset point back to their original point"""
-        downpos = [(6, 2), (1, 1), (5, 1), (2, 2), (4, 2), (0, 0), (6, 0)]
-        uppos = [(0, 6), (5, 7), (1, 7), (4, 6), (2, 6), (6, 8), (0, 8), (6, 6)]
-        for num in range(0, 8):
-            self.md.upAnimalList[num].position = uppos[num]
-            self.md.downAnimalList[num].position = downpos[num]
+    def test_get_same_position_enemy(self):
+        cat1, dog2 = self.md.upAnimalList[1], self.md.downAnimalList[2]
+        cat1.position = (3, 4)
+        dog2.position = (3, 4)
+        self.assertEqual(self.md.get_same_position_enemy(dog2), 'upside_Cat')
 
     def test_die(self) -> None:
         cat1: md.Animals = self.md.upAnimalList[1]
@@ -189,11 +244,10 @@ class ChessboardTest(unittest.TestCase):
         :return: None
         """
         rat1: md.Animals = self.md.downAnimalList[0]
-        temp: tuple = md.Model().get_estimated_new_position(rat1, "left")
-        temp1: tuple = md.Model().get_estimated_new_position(rat1, "right")
+        temp: tuple = md.Model().get_estimated_new_position(rat1, "left", 'move')
+        temp1: tuple = md.Model().get_estimated_new_position(rat1, "right", 'move')
         self.assertEqual(temp, (5, 2))
         self.assertEqual(temp1, (7, 2))
-        self.pointBackOri()
 
     def test_if_move_out_of_range(self) -> None:
         """
@@ -211,7 +265,6 @@ class ChessboardTest(unittest.TestCase):
         self.assertEqual(temp.if_move_out_of_range((1, 4)), False)
         self.assertEqual(temp.if_move_out_of_range((9, 4)), True)
         self.assertEqual(temp.if_move_out_of_range((3, 0)), False)
-        self.pointBackOri()
 
     def test_if_next_step_in_land(self) -> None:
         """
@@ -223,11 +276,10 @@ class ChessboardTest(unittest.TestCase):
         that chess will out of board, so this function won't check it
         :return:
         """
-        self.assertEqual(self.md.if_next_step_in_land((2, 5)), True)
+        self.assertEqual(self.md.if_next_step_in_land((2, 5)), False)
         self.assertEqual(self.md.if_next_step_in_land((4, 3)), True)
         self.assertEqual(self.md.if_next_step_in_land((3, 1)), False)
         self.assertEqual(self.md.if_next_step_in_land((1, 6)), False)
-        self.pointBackOri()
 
     def test_if_position_has_same_side_animal(self) -> None:
         """
@@ -241,16 +293,14 @@ class ChessboardTest(unittest.TestCase):
         """
         self.md.downAnimalList[7].position = (6, 2)  # the enemy chess on the next step of moving chess
         elephant1: md.Animals = md.Animals("upside_Elephant", 8, (5, 2), True)
-        pos: tuple = self.md.get_estimated_new_position(elephant1, "right")
+        pos: tuple = self.md.get_estimated_new_position(elephant1, "right", 'move')
         self.assertEqual(self.md.if_position_has_same_side_animal(elephant1, pos), False)
-
         self.md.upAnimalList[5].position = (6, 2)
         self.assertEqual(self.md.if_position_has_same_side_animal(elephant1, pos), True)
 
         # restore the position of chess in List, so the next step of moving elephant is an empty position
-        self.md.downAnimalList[7].position, self.md.upAnimalList[5] = (0, 2), (2, 6)
+        self.md.downAnimalList[7].position, self.md.upAnimalList[5].position = (0, 2), (2, 6)
         self.assertEqual(self.md.if_position_has_same_side_animal(elephant1, pos), False)
-        self.pointBackOri()
 
     def test_if_position_has_same_rank_enemy(self) -> None:
         """
@@ -266,7 +316,7 @@ class ChessboardTest(unittest.TestCase):
         dog1: md.Animals = self.md.upAnimalList[2]  # upside dog
         dog2: md.Animals = self.md.downAnimalList[2]  # downside dog
         cat1: md.Animals = self.md.downAnimalList[1]  # downside cat
-        pos: tuple = self.md.get_estimated_new_position(dog1, "right")
+        pos: tuple = self.md.get_estimated_new_position(dog1, "right", 'move')
         # met with the same rank enemy
         dog2.position = (2, 7)
         self.assertEqual(self.md.if_position_has_same_rank_enemy(dog1, pos), True)
@@ -277,14 +327,12 @@ class ChessboardTest(unittest.TestCase):
         rat1, rat2 = self.md.upAnimalList[0], self.md.downAnimalList[0]
         rat1.position, rat2.position = (2, 3), (2, 4)
         # now upside rat rat1 is gonna right jump out of river, but there is a downside rat on its way
-        pos = self.md.get_estimated_new_position(rat1, "right")
-        self.assertEqual(self.md.if_position_has_same_rank_enemy(rat1, pos), False)
+        rat1.move('right')
+        self.assertEqual(self.md.if_position_has_same_rank_enemy(rat1, (2, 4)), True)
 
         # downside rat rat2 now in the same river with rat1
         rat2.position = (2, 2)
-        pos = self.md.get_estimated_new_position(rat1, "left")
-        self.assertEqual(self.md.if_position_has_same_rank_enemy(rat1, pos), True)
-        self.pointBackOri()
+        self.assertEqual(self.md.if_position_has_same_rank_enemy(rat1, (2, 3)), False)
 
     def test_if_position_has_lower_rank_enemy(self) -> None:
         """
@@ -297,18 +345,15 @@ class ChessboardTest(unittest.TestCase):
         dog1, wolf1, cat1, rat1, elephant1 = self.md.downAnimalList[2], self.md.upAnimalList[3], self.md.upAnimalList[
             1], self.md.upAnimalList[0], self.md.downAnimalList[7]
         dog1.position = (3, 2)
-        commonpos: tuple = self.md.get_estimated_new_position(dog1, "up")
 
         wolf1.position = (3, 3)
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy(dog1, commonpos), False)
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy(dog1, (3, 3)), False)
 
-        cat1.position = (3, 3)
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy(dog1, commonpos), True)
+        cat1.position = (3, 5)
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy(dog1, (3, 5)), True)
 
         rat1.position, elephant1.position = (6, 4), (6, 5)
-        pos = self.md.get_estimated_new_position(elephant1, "down")
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy(elephant1, pos), False)
-        self.pointBackOri()
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy(elephant1, (6, 4)), True)
 
     def test_if_position_has_higher_rank_enemy(self) -> None:
         """
@@ -317,16 +362,13 @@ class ChessboardTest(unittest.TestCase):
         :return:
         in our system, this function is applied to situations without elephant involved
         """
-        rat1, elephant1, leopard1, wolf1 = self.md.upAnimalList[0], self.md.downAnimalList[7], self.md.upAnimalList[4], \
-                                           self.md.downAnimalList[3]
-        rat1.position, elephant1.position = (1, 5), (1, 6)
-        pos = self.md.get_estimated_new_position(rat1, "up")
-        self.assertEqual(self.md.if_position_has_higher_rank_enemy(rat1, pos), False)
+        leopard2, elephant1, leopard1, wolf1 = self.md.downAnimalList[4], self.md.downAnimalList[7], \
+                                               self.md.upAnimalList[4], self.md.downAnimalList[3]
+        leopard1.position, elephant1.position = (1, 5), (1, 6)
+        self.assertEqual(self.md.if_position_has_higher_rank_enemy(leopard1, (1, 6)), True)
 
         wolf1.position, leopard1.position = (3, 5), (3, 6)
-        pos = self.md.get_estimated_new_position(wolf1, "up")
-        self.assertEqual(self.md.if_position_has_higher_rank_enemy(leopard1, pos), True)
-        self.pointBackOri()
+        self.assertEqual(self.md.if_position_has_higher_rank_enemy(leopard1, (3, 5)), False)
 
     def test_if_next_step_in_river(self) -> None:
         """
@@ -334,12 +376,8 @@ class ChessboardTest(unittest.TestCase):
         :return:
         """
         self.assertEqual(self.md.if_next_step_in_river((1, 3)), True)
-        self.assertEqual(self.md.if_next_step_in_river((5, 5)), True)
-
-        rat1 = self.md.downAnimalList[0]
-        pos = self.md.get_estimated_new_position(rat1, "up")
-        self.assertEqual(self.md.if_next_step_in_river(pos), False)
-        self.pointBackOri()
+        self.assertEqual(self.md.if_next_step_in_river((5, 6)), False)
+        self.assertEqual(self.md.if_next_step_in_river((2, 4)), True)
 
     def test_if_position_has_enemy_Elephant(self) -> None:
         """
@@ -351,17 +389,16 @@ class ChessboardTest(unittest.TestCase):
         :return:
         """
         animals, elephant1, elephant2 = self.md.upAnimalList[3], self.md.downAnimalList[7], self.md.upAnimalList[7]
-        pos = self.md.get_estimated_new_position(animals, "left")
-        # nothing on the way
-        self.assertEqual(self.md.if_position_has_enemy_Elephant(animals, pos), False)
+
+        # the enemy elephant on the way
+        self.assertEqual(self.md.if_position_has_enemy_Elephant(animals, (0, 2)), True)
 
         # the same side on the way
         elephant2.position = (3, 6)
-        self.assertEqual(self.md.if_position_has_enemy_Elephant(animals, pos), False)
+        self.assertEqual(self.md.if_position_has_enemy_Elephant(animals, (3, 6)), False)
 
-        # the enemy elephant on the way
-        self.assertEqual(self.md.if_position_has_enemy_Elephant(animals, pos), True)
-        self.pointBackOri()
+        # nothing on the way
+        self.assertEqual(self.md.if_position_has_enemy_Elephant(animals, (1, 2)), False)
 
     def test_if_position_has_enemy_Rat(self) -> None:
         """
@@ -373,19 +410,17 @@ class ChessboardTest(unittest.TestCase):
         rat1, rat2, wolf1, cat1 = self.md.upAnimalList[0], self.md.downAnimalList[0], self.md.upAnimalList[3], \
                                   self.md.downAnimalList[1]
         rat1.position, cat1.position = (3, 6), (3, 5)
-        pos = self.md.get_estimated_new_position(cat1, "up")
-        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, pos), True)
+        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, (3, 6)), True)
 
         rat1.position = (0, 6)
-        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, pos), False)
+        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, (0, 5)), False)
 
-        rat2.position = (3, 6)
-        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, pos), False)
+        rat2.position = (4, 6)
+        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, (4, 6)), False)
 
         # with other enemy animals
-        wolf1.position = (3, 6)
-        self.assertEqual(self.md.if_position_has_enemy_Rat(cat1, pos), False)
-        self.pointBackOri()
+        wolf1.position = (5, 6)
+        self.assertEqual(self.md.if_position_has_enemy_Rat(wolf1, (0, 6)), False)
 
     def test_if_position_has_lower_rank_enemy_except_Rat(self) -> None:
         """
@@ -397,19 +432,11 @@ class ChessboardTest(unittest.TestCase):
         """
         rat1, rat2, lion1, elephant = self.md.downAnimalList[0], self.md.upAnimalList[0], self.md.downAnimalList[6], \
                                       self.md.upAnimalList[7]
-        pos: tuple = self.md.get_estimated_new_position(elephant, "down")
-
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, pos), True)
-
-        lion1.position = (6, 5)
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, pos), True)
-
-        rat2.position = (6, 5)
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, pos), False)
-
-        rat1.position = (6, 5)
-        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, pos), False)
-        self.pointBackOri()
+        rat1.position = (2, 4)
+        lion1.position = (4, 7)
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, (2, 3)), False)
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, (4, 7)), True)
+        self.assertEqual(self.md.if_position_has_lower_rank_enemy_except_Rat(elephant, (2, 4)), False)
 
     def test_if_rat_in_that_river(self) -> None:
         """
@@ -419,21 +446,10 @@ class ChessboardTest(unittest.TestCase):
         :return:
         """
         rat1: md.Animals = self.md.downAnimalList[0]
-        # no rat in river
-        self.assertEqual(self.md.if_rat_in_that_river("right"), False)
-        self.assertEqual(self.md.if_rat_in_that_river("left"), False)
-
         rat1.position = (4, 5)
-        # downside rat in river, upside rat not move
-        self.assertEqual(self.md.if_rat_in_that_river("right"), True)
-        self.assertEqual(self.md.if_rat_in_that_river("left"), False)
-
-        # both river has one rat
         rat2: md.Animals = self.md.upAnimalList[0]
         rat2.position = (2, 5)
-        self.assertEqual(self.md.if_rat_in_that_river("right"), True)
         self.assertEqual(self.md.if_rat_in_that_river("left"), True)
-        self.pointBackOri()
 
 
 if __name__ == "__main__":
