@@ -16,7 +16,7 @@ class Model():
     # initialize a new Chessboard
     def __init__(self):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
-        downside_Rat = Animals("downside_Rat", 1, (5, 3), True) # (6, 2)
+        downside_Rat = Animals("downside_Rat", 1, (5, 3), True)  # (6, 2)
         downside_Cat = Animals("downside_Cat", 2, (1, 1), True)
         downside_Dog = Animals("downside_Dog", 3, (5, 1), True)
         downside_Wolf = Animals("downside_Wolf", 4, (2, 2), True)
@@ -32,7 +32,7 @@ class Model():
         upside_Wolf = Animals("upside_Wolf", 4, (4, 6), True)
         upside_Leopard = Animals("upside_Leopard", 5, (2, 6), True)
         upside_Tiger = Animals("upside_Tiger", 6, (6, 8), True)
-        upside_Lion = Animals("upside_Lion", 7, (3, 3), True) # (0, 8)
+        upside_Lion = Animals("upside_Lion", 7, (3, 3), True)  # (0, 8)
         upside_Elephant = Animals("upside_Elephant", 8, (6, 6), True)
 
         downAnimalList = [downside_Rat, downside_Cat, downside_Dog,
@@ -82,140 +82,258 @@ class Model():
         Hint9 = 9
 
         # get the estimated new position of the animal. This position is NOT the real position of animals, but an estimated one, which is used for validating purpose.
+        estimated_new_position = self.get_estimated_new_position(
+            moving_animal, direction, action)
         try:
-            new_position = self.get_estimated_new_position(moving_animal, direction, action)
-            if self.get_estimated_new_position(moving_animal, direction, action) == self.den_position:
-                if moving_animal.name[0] == 'u':
-                    if self.get_estimated_new_position(moving_animal, direction, action) == (3, 8):
-                        return False, Hint8
-                    return True, Hint8
-                if moving_animal.name[0] == 'd':
-                    if self.get_estimated_new_position(moving_animal, direction, action) == (3, 0):
-                        return False, Hint8
-                    return True, Hint8
+            if self.if_move_out_of_range(estimated_new_position):
+                return False
 
-            # 1 If the animal's next step in out of chessboard range
-            elif (self.if_move_out_of_range(new_position) == True):
-                return (False, Hint1)
+            elif moving_animal.getRank() == 7 or moving_animal.getRank() == 6:
+                if action == 'move':
 
-            # 2 If the animal's next step is in land:
-            elif self.if_next_step_in_land(new_position) == True:
-                # 2.1 a land square that already occupied by its side's animals
-                if self.if_position_has_same_side_animal(moving_animal, new_position):
-                    return False, Hint2
+                    if self.if_position_in_river(estimated_new_position):
+                        # 老虎不可过河，只能跳河
+                        return False
 
-                # Lion, Tiger: Jump / move
-                #      jump: have rat in river: ifCanMove = False
-                #            don't have rat: ifCanMove = T
-                #      move: higher rank enemy: itCanMove = False
-                #            else: ifCanMove = T
-                elif (moving_animal.getRank() == 7 or moving_animal.getRank() == 6):
-                    x, y = moving_animal.getPosition()
-                    if self.if_position_near_river(moving_animal.position) and action == "jump":
-                        if direction == "up":
-                           river_square = x, y + 1
-                        elif direction == "down":
-                            river_square = x, y-1
-                        elif direction == "right":
-                            river_square = x+1, y
-                        elif direction == "left":
-                            river_square = x-1, y
-                        if river_square in self.river_position:
-                            if river_square[0] == 1 or river_square[0] == 2:
-                                side_of_river = 'left'
-                                return (not self.if_rat_in_that_river(side_of_river), Hint6)
-                            else:
-                                side_of_river = 'right'
-                                return (not self.if_rat_in_that_river(side_of_river), Hint6)
+                    elif self.if_position_in_land(estimated_new_position):
+                        # 老虎下一步是陆地：
+                        #    如果不遇到任何动物： 可move
+                        #    如果遇到低阶敌人：可move
+                        #    如果遇到高阶或平级敌人：不可move
+                        #    如果遇到自己人：不可move
+                        if self.if_position_is_empty(estimated_new_position) or self.if_position_has_lower_rank_enemy:
+                            return True
                         else:
                             return False
-                    elif action == "move":
-                        return not self.if_position_has_higher_rank_enemy(moving_animal, new_position)
 
-                # Rat:
-                # Elephant:
-                # other animals
-                # check if the next step is not occupied by any other animals
-                if moving_animal.name[0] == 'u':
-                    if new_position not in [num.getPosition() for num in self.downAnimalList]:
-                        return True, Hint9
-                else:
-                    if new_position not in [num.getPosition() for num in self.upAnimalList]:
-                        return True, Hint9
+                    elif self.if_position_in_trap(estimated_new_position):
+                        # 老虎下一步是陷阱：
+                        #     如果遇到自己人：不可move
+                        #     如果遇到敌人：可move
+                        #     如果不遇到任何动物：可move
+                        if self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                            return False
+                        else:
+                            return True
 
+                    elif self.if_position_in_den(estimated_new_position):
+                        # 老虎下一步是兽窝：
+                        #    如果兽窝是自己方的：不可move
+                        #    如果兽窝是别方的，可move
+                        if moving_animal.name[0] == 'u':
+                            if estimated_new_position == self.den_position[0]:
+                                # self.den_position[0] = (3,0)
+                                return True
+                            else:
+                                return False
+                        else:  # 老虎是downside的
+                            if estimated_new_position == self.den_position[1]:
+                                # self.den_position[1] = (3,8)
+                                return True
+                            else:
+                                return False
 
-                # For all Animals, they're not allowed to move to:
+                else:  # (action == 'jump')
+                    if self.if_position_in_river(estimated_new_position):
+                        # 老虎jump, 下一步不可能是河, 不可move
+                        return False
 
+                    elif self.if_position_in_land(estimated_new_position):
+                        # 老虎jump, 下一步是陆地
+                        #    如果下一步没任何动物：可move
+                        #    如果下一步有低阶敌人：可move
+                        #    如果下一步有高阶或平级敌人：不可move
+                        #    如果下一步有自己人：不可move
+                        if self.if_position_is_empty(estimated_new_position) or self.if_position_has_lower_rank_enemy(moving_animal, estimated_new_position):
+                            return True
+                        else:
+                            return False
 
+                    elif self.if_position_in_trap(estimated_new_position) or self.if_position_in_den(estimated_new_position):
+                        # 老虎jump, 下一步不可能是陷阱或兽窝，不可move
+                        return False
 
-                # 2.2
-                # a. For Rat(1): if its original position is in River, it can't move to a square that already occupied by enemy Elephant(8)(Elephant belonged to any higher rank, case a) or enemy Rat(1), because it will be eaten by enemy Elephant(8) or enemy Rat(1).
-                elif (moving_animal.getRank == '1'):
-                    if (self.if_position_has_higher_rank_enemy(moving_animal, new_position)
-                    ):
-                        return (False, Hint3)
-                    elif (self.if_position_has_same_rank_enemy(moving_animal, new_position)):
-                        return (False, Hint4)
+            elif moving_animal.getRank() == 1:
+                original_position = moving_animal.getPosition()
+                if self.if_position_in_river(estimated_new_position):
+                    # 老鼠下一步是河：
+                    #     如果老鼠从河到河：
+                    #         遇到敌人老鼠：可move
+                    #         没遇到：可move
+                    #     如果老鼠从陆地到河：
+                    #         遇到敌人老鼠：不可move
+                    #         没遇到：可move
+                    if self.if_position_in_river(original_position):
+                        return True
+                    else:
+                        if self.if_position_is_empty(estimated_new_position):
+                            return True
+                        else:
+                            return False
+
+                elif self.if_position_in_land(estimated_new_position):
+                    # 老鼠下一步是陆地：
+                    #     如果老鼠从水里出来到陆地：
+                    #         不遇到任何动物： 可以move
+                    #         遇到任何动物：不可move
+                    #     如果老鼠从陆地到陆地：
+                    #         不遇到任何动物： 可以move
+                    #         遇到敌人大象：可以move
+                    #         遇到敌人（除大象）：不可move
+                    #         遇到自己人：不可move
+
+                    if self.if_position_in_river(original_position):
+                        if self.if_position_is_empty(estimated_new_position):
+                            return True
+                        else:
+                            return False
+
+                    else:  # 老鼠从陆地到陆地
+                        if self.if_position_is_empty(estimated_new_position) or self.if_position_has_enemy_Elephant(moving_animal, estimated_new_position):
+                            return True
+                        else:
+                            return False
+
+                elif self.if_position_in_trap:
+                    # 老鼠下一步是陷阱：
+                    #     如果遇到自己人：不可move
+                    #     如果遇到敌人：可move
+                    #     如果不遇到任何动物：可move
+                    if self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                        return False
+                    else:
+                        # 如果遇到敌人：可move
+                        # 如果不遇到任何动物：可move
+                        return True
+
+                elif self.if_position_in_den(moving_animal, estimated_new_position):
+                    # 老鼠下一步是兽窝：
+                    #    如果兽窝是自己方的：不可move
+                    #    如果兽窝是别方的，可move
+                    if moving_animal.name[0] == 'u':
+                        if estimated_new_position == self.den_position[0]:
+                            # self.den_position[0] = (3,0)
+                            return True
+                        else:
+                            return False
+                    else:  # 老鼠是downside的
+                        if estimated_new_position == self.den_position[1]:
+                            # self.den_position[1] = (3,8)
+                            return True
+                        else:
+                            return False
+
+            elif moving_animal.getRank() == 8:
+                if self.if_position_in_river(estimated_new_position):
+                    # 大象下一步是河，不可move
+                    return False
+
+                elif self.if_position_in_land(estimated_new_position):
+                    # 大象下一步是陆地
+                    #     如果没有遇到任何动物：可move
+                    #     如果遇到低阶敌人（除了敌人老鼠）：可move
+                    #     如果遇到敌人老鼠：不可move
+                    #     如果遇到自己人：不可move
+                    if self.if_position_has_enemy_Rat(moving_animal, estimated_new_position) or self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                        return False
                     else:
                         return True
-                # 3.2 For Lion(7), Tiger(6): can move across the river  when there is NOT a Rat(1)(no matter friendly or enemy) in the river
 
+                elif self.if_position_in_trap(estimated_new_position):
+                    # 大象下一步是陷阱
+                    #     如果遇到自己人：不可move
+                    #     如果遇到敌人：可move
+                    #     如果不遇到任何动物：可move
+                    if self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                        return False
+                    else:
+                        return True
 
+                elif self.if_position_in_den(estimated_new_position):
+                    # 大象下一步是兽窝：
+                    #    如果兽窝是自己方的：不可move
+                    #    如果兽窝是别方的，可move
+                    if moving_animal.name[0] == 'u':
+                        if estimated_new_position == self.den_position[0]:
+                            # self.den_position[0] = (3,0)
+                            return True
+                        else:
+                            return False
+                    else:  # 大象是downside的
+                        if estimated_new_position == self.den_position[1]:
+                            # self.den_position[1] = (3,8)
+                            return True
+                        else:
+                            return False
 
+            else:  # 剩余的都是其他动物
 
-                        # ---------------------------------------------------------------------
-                        # if self.get_estimated_new_position(moving_animal, direction, action) == self.den_position:
-                        #     if moving_animal.name[0] == 'u':
-                        #         if self.get_estimated_new_position(moving_animal, direction, action) == (3, 8):
-                        #             return False, Hint8
-                        #         return True, Hint8
-                        #     if moving_animal.name[0] == 'd':
-                        #         if self.get_estimated_new_position(moving_animal, direction, action) == (3, 0):
-                        #             return False, Hint8
-                        #         return True, Hint8
-                        #
-                        # # 1 If the animal's next step in out of chessboard range
-                        # elif (self.if_move_out_of_range(new_position) == True):
-                        #     return (False, Hint1)
-                        #
-                        # # 2 If the animal's next step is in land:
-                        # elif self.if_next_step_in_land(new_position) == True:
-                        #     # For all Animals, they're not allowed to move to:
-                        #     # 2.1 a land square that already occupied by its side's animals
-                        #     if self.if_position_has_same_side_animal(moving_animal, new_position):
-                        #         return (False, Hint2)
-                        # if (moving_animal.getRank() != '8'):
-                        #     return (not self.if_position_has_higher_rank_enemy(moving_animal, new_position), Hint3)
-                        # ---------------------------------------------------------------------
-                # b. For all Animals except Elephant(8): a square that already occupied by enemies that have a higher rank.
-                elif (moving_animal.getRank() != '8'):
-                    return (not self.if_position_has_higher_rank_enemy(moving_animal, new_position), Hint3)
-                # c. For Elephant(8): a square that already occupied by enemy Rat(1)
-                elif moving_animal.getRank() == '8':
-                    return (not self.if_position_has_enemy_Rat(moving_animal, new_position), Hint4)
+                if self.if_position_in_river(estimated_new_position):
+                    # 其他动物下一步是河，不可move
+                    return False
+                elif self.if_position_in_land(estimated_new_position):
+                    # 其他动物下一步是陆地
+                    #    如果没有遇到任何动物：可move
+                    #    如果遇到低阶敌人：可move
+                    #    如果遇到高阶或平级敌人：不可move
+                    #    如果遇到自己人：不可move
+                    if self.if_position_is_empty(estimated_new_position) or self.if_position_has_lower_rank_enemy(estimated_new_position):
+                        return True
+                    else:
+                        return False
 
-            # 3 If the animal's next step is in river:
-            elif (self.if_next_step_in_river(new_position) == True):
-                # 3.1 For Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2): can't move into the river
-                if (
-                        moving_animal.getRank() != 1):
-                    return (False, Hint5)
-                # # 3.2 For Lion(7), Tiger(6): can move across the river  when there is NOT a Rat(1)(no matter friendly or enemy) in the river
-                # elif (moving_animal.getRank() == 7 or moving_animal.getRank() == 6):
-                #     side_of_river = moving_animal.getRiverSide()
-                #     return (not self.if_rat_in_that_river(side_of_river), Hint6)
-                elif moving_animal.getRank() == 1:
-                    return True, None
+                elif self.if_position_in_trap(estimated_new_position):
+                    # 其他动物下一步是陷阱：
+                    #     如果遇到自己人：不可move
+                    #     如果遇到敌人：可move
+                    #     如果不遇到任何动物：可move
+                    if self.if_position_has_same_side_animal(moving_animal, estimated_new_position):
+                        return False
+                    else:
+                        # 如果遇到敌人：可move
+                        # 如果不遇到任何动物：可move
+                        return True
 
-            else:
-                return (True, Hint7)
-            # 3.3 For Rat(1): can randomly go into the river
-            # elif (self.getRank() == '1'):
-            #     return (True, noHint)
+                elif self.if_position_in_den(estimated_new_position):
+                    # 其他动物下一步是兽窝：
+                    #    如果兽窝是自己方的：不可move
+                    #    如果兽窝是别方的，可move
+                    if moving_animal.name[0] == 'u':
+                        if estimated_new_position == self.den_position[0]:
+                            # self.den_position[0] = (3,0)
+                            return True
+                        else:
+                            return False
+                    else:  # 其他动物是downside的
+                        if estimated_new_position == self.den_position[1]:
+                            # self.den_position[1] = (3,8)
+                            return True
+                        else:
+                            return False
 
         except Exception:
             print(
                 "Error! Can't check whether the animal can move to next step. Pls check ifCanMove() in Model.py")
+
+    def if_position_in_trap(self, position: tuple) -> bool:
+        if position in self.trap_position:
+            return True
+        else:
+            return False
+
+    def if_position_in_den(self, position: tuple) -> bool:
+        if position in self.den_position:
+            return True
+        else:
+            return False
+
+    def if_position_is_empty(self, position: tuple) -> bool:
+        if position in self.downAnimalList:
+            return False
+        elif position in self.upAnimalList:
+            return False
+        else:
+            return True
 
     def if_position_near_river(self, pos: tuple) -> bool:
         return True if pos in self.near_river_position else False
@@ -246,9 +364,7 @@ class Model():
         '''
         moving_animal.jumpOver(direction)
 
-
-
-    def if_new_position_has_enemy_that_can_be_eaten(self, moving_animal: Animals, direction: str, action: str) -> bool:
+    def if_new_position_has_enemy_that_can_be_eaten(self, moved_animal: Animals, direction: str, action: str) -> bool:
         """
         1. Purpose: This function is used to check that if the new position where the animal move to has an enemy that it can eat.
         2. Function parameter: "moving_animal" is passed from Controller
@@ -267,41 +383,120 @@ class Model():
                 the side of the animal will win if the animal move to opponent's side.
                 Because in this case, the animal will not care eating enemy anymore
         """
-        position = moving_animal.position
-        try:
-            # 1 in Land
-            if (moving_animal.ifInLand()):
-                # 1.1 All animals except Rat(1), can eat enemy that have the same/lower rank
-                position = moving_animal.getPosition()
-                if (moving_animal.getRank() != '1'):
-                    if self.if_position_has_enemy(moving_animal) == True and self.if_position_has_lower_rank_enemy(moving_animal):
-                        return True
 
+        position = moved_animal.position
+        try:
+            if moved_animal.getRank() == 7 or moved_animal.getRank() == 6:
+
+                if self.if_position_in_land(position):
+                    # 老虎走到陆地上
+                    #     如果遇到低阶或平级敌人：可eat
+                    #     其他：不可eat
+                    if self.if_position_has_lower_rank_enemy(moved_animal, position) or self.if_position_has_same_rank_enemy(moved_animal, position):
+                        return True
+                    else:
+                        return False
+                elif self.if_position_in_trap(position):
+                    # 老虎走到陷阱里
+                    #    陷阱里有其他动物（这个一定是敌人动物）：可eat
+                    #    陷阱里无其他动物：不可eat
+                    if self.if_position_has_enemy(moved_animal, position):
+                        return True
                     else:
                         return False
 
-                # 1.2 Rat(1) can eat enemy Elephant(8) and Rat(1)
-                elif (moving_animal.getRank() == '1'):
-                    # The case that a Rat move from the water to attack enemy Elephant/Rat is NOT allowed. However, this case is already checked by ifCanMove() before this func.
-                    return self.if_position_has_enemy_Elephant(self, moving_animal,
-                                                               position) | self.if_position_has_same_rank_enemy(self,
-                                                                                                                moving_animal,
-                                                                                                                position)
-
-            # 2 in River
-            elif (moving_animal.ifInRiver()):
-                # only Rat(1) will in River. In this case, it can eat enemy Rat(1).
-                if (self.if_position_has_enemy(moving_animal) == True and self.if_position_has_same_rank_enemy(moving_animal, position) == True):
-                    return True
-                else:
+                else:  # 老虎走到兽窝（一定是敌人兽窝）里，不可eat
                     return False
 
-            # 3 in Trap
-            elif (moving_animal.ifInTrap()):
-                return True
+            elif moved_animal.getRank() == 1:
+
+                if self.if_position_in_river(position):
+                    # 老鼠走到了河里
+                    #    如果老鼠从河里到河里：
+                    #        遇到敌人老鼠：可eat
+                    #        没遇到：不可eat
+                    #    如果老鼠从陆地到河里：
+                    #        没遇到（不可能遇到敌人老鼠）：不可eat
+                    if self.if_position_has_enemy_Rat(moved_animal, position):
+                        return True
+                    else:
+                        return False
+
+                elif self.if_position_in_land(position):
+                    # 老鼠走到了陆地上
+                    #    如果从河里到陆地：
+                    #        没遇到（不可能遇到任何动物）:不可eat
+                    #    如果从陆地到陆地：
+                    #        遇到了敌人大象：可eat
+                    #        遇到了敌人老鼠：可eat
+                    #        没遇到：不可eat
+                    if self.if_position_has_enemy_Elephant(moved_animal, position) or self.if_position_has_enemy_Rat(moved_animal, position):
+                        return True
+                    else:
+                        return False
+
+                elif self.if_position_in_trap(position):
+                    # 老鼠走到了陷阱里：
+                    #    如果遇到了其他动物（这个一定是敌人动物）：可eat
+                    #    没遇到：不可eat
+                    if self.if_position_has_enemy(moved_animal, position):
+                        return True
+                    else:
+                        return False
+
+                elif self.if_position_in_den(position):
+                    # 老鼠走到兽窝（一定是敌人兽窝）里，不可eat
+                    return False
+
+            elif moved_animal.getRank() == 8:
+
+                if self.if_position_in_land(position):
+                    # 大象走到了陆地
+                    #    如果遇到了低阶或平级敌人(一定不会包含敌人老鼠)：可eat
+                    #    没遇到：不可eat
+                    if self.if_position_has_lower_rank_enemy(moved_animal, position) or self.if_position_has_same_rank_enemy(moved_animal, position):
+                        return True
+                    else:
+                        return False
+
+                elif self.if_position_in_trap(position):
+                    # 大象走到了陷阱里：
+                    #    如果遇到了敌人动物（这个一定是敌人动物）：可eat
+                    #    没遇到：不可eat
+                    if self.if_position_has_enemy(moved_animal, position):
+                        return True
+                    else:
+                        return False
+                elif self.if_position_in_den(position):
+                    # 大象走到了兽窝里，不可eat
+                    return False
 
             else:
-                return False
+                # 其他动物
+                if self.if_position_in_land(position):
+                    # 走到了陆地上
+                    #     遇到了低阶或平级动物：可eat
+                    #     没遇到：不可eat
+                    if self.if_position_has_lower_rank_enemy(moved_animal, position) or self.if_position_has_same_rank_enemy(moved_animal, position):
+                        return True
+                    else:
+                        return False
+
+                elif self.if_position_is_trap(position):
+                    # 走到了陷阱里：
+                    #     遇到了敌人动物：可eat
+                    #     没遇到：不可eat
+
+                    if self.if_position_has_enemy(moved_animal):
+                        return True
+                    else:
+                        return False
+                elif self.if_position_is_den(position):
+                    # 走到了兽窝里：不可eat
+                    return False
+
+                pass
+
         except Exception:
             print(
                 "Error! Can't check whether the animal can eat enemy. Pls check if_new_position_has_enemy_that_can_be_eaten()")
@@ -373,7 +568,7 @@ class Model():
             return True
         return False
 
-    def if_next_step_in_land(self, new_position: tuple) -> bool:
+    def if_position_in_land(self, position: tuple) -> bool:
         """
         1. Purpose: check if the new position is in a land square
         2. Function parameter: "new_position" is passed from get_estimated_new_position()
@@ -423,8 +618,6 @@ class Model():
                     if i.rank == moving_animal.rank:
                         return True
             return False
-
-
 
     def if_position_has_lower_rank_enemy(self, moving_animal: Animals, position: tuple) -> bool:
         '''
@@ -481,7 +674,7 @@ class Model():
             return self.if_position_has_enemy_Rat(moving_animal, position)
 
     def if_position_lower_or_empty(self, moving_animal: Animals) -> bool:
-        return self.if_position_has_lower_rank_enemy(moving_animal, moving_animal.position) or self.if_position_has_enemy( moving_animal)
+        return self.if_position_has_lower_rank_enemy(moving_animal, moving_animal.position) or self.if_position_has_enemy(moving_animal)
 
     def if_position_has_enemy(self, moving_animal: Animals) -> bool:
         if moving_animal.name[0] == 'u':
@@ -495,7 +688,7 @@ class Model():
                     return True
             return False
 
-    def if_next_step_in_river(self, new_position: tuple) -> bool:
+    def if_position_in_river(self, position: tuple) -> bool:
         """
         1. Purpose: check if the new position is in a river square
         2. Function parameter: "new_position" is passed from get_estimated_new_position()
