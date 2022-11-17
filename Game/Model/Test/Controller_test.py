@@ -62,7 +62,7 @@ class ControllerTest(unittest.TestCase):
 
     def test_commandRecord(self, inputs: str):
         previous = os.path.getsize("/history.txt")
-        self.ctl.commandRecord(inputs)
+        commandRecord(inputs)
         now = os.path.getsize("/history.txt")
         self.assertTrue(now > previous)
 

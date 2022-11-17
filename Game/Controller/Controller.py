@@ -35,7 +35,6 @@ class Controller:
         modify turnFlag to decide who starts first
         """
         inputs: str = input("Please choose your preferred side: ")
-        print(inputs)
         if inputs.lower() == "up":
             self.turnFlag = 1
         elif inputs.lower() == "down":
@@ -47,10 +46,11 @@ class Controller:
 
     def executeInput(self) -> None:
         while not self.exit:
-            self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList)
+            self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList, self.turnFlag)
+            print("Now is", "down side" if not self.turnFlag % 2 else "up side", "player turn")
             self.processing()
             self.turnFlag += 1
-        self.finalPrint()
+        self.finalPrint(False, False)
 
     def wordProcess(self, inputs: list) -> bool:
         if inputs[1].lower() not in matchers.keys() or inputs[2].lower() not in ["left", "right", "up", "down"]:
@@ -80,10 +80,10 @@ class Controller:
                 return self.processing()
             direction, action = inputs[2], inputs[0]
             moving = self.gamer[matchers[inputs[1].lower()] - 1]
-            if self.ifEnd(moving, direction, action): self.finalPrint()
+            if self.ifEnd(moving, direction, action): self.finalPrint(False, False)
             potential = self.game_model.ifCanMove(moving, direction, action)
-            if not potential:
-                # self.game_view.printHints(potential)
+            if not potential[0]:
+                self.game_view.printHints(potential[1] - 1)
                 return self.processing()
 
             if inputs[0] == "move":
@@ -93,7 +93,6 @@ class Controller:
             if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving, direction, action):
                 opponent: anim = self.game_model.get_same_position_enemy(moving)
                 self.game_model.die(opponent)
-            self.commandRecord(" ".join(inputs))
         elif inputs[0] == "help":
             self.game_view.printHelp()
         elif inputs[0].lower() == "defeat":
@@ -102,15 +101,11 @@ class Controller:
             self.Exit()
             print("Bye~")
         else:
-            Exception("Input wrong, system will stop")
+            print("Hey player, please do not arbitrarily input, OK? you are playing game. please input again!")
+            return self.processing()
 
-    def commandRecord(self, inputs: str) -> None:
-        with open(r"/History.txt", "a+") as file:
-            file.write(inputs + "\n")
-        return
-
-    def finalPrint(self):
-        self.game_view.printGameResult(self.turnFlag)
+    def finalPrint(self, defeat: bool, exit: bool):
+        self.game_view.printGameResult(self.turnFlag, defeat, exit)
         sys.exit()
 
     def AdmitDefeat(self):
@@ -118,10 +113,10 @@ class Controller:
         function to handle the user's surrender request.
         return: a boolean variable.
         """
-        if input("you will admit your defeat and surrender to your opponent, please confirm again: ").lower() in ["y",
-                                                                                                                  "yes"]:
-            print("player ", 2 - (self.turnFlag % 2), " win this game! ")
-            self.finalPrint()
+        if input("\nyou will admit your defeat and surrender to your opponent, please confirm again:\n ").lower() in [
+            "y", "yes"]:
+            self.turnFlag += 1
+            self.finalPrint(True, False)
         return
 
     def Exit(self):
@@ -131,12 +126,12 @@ class Controller:
         """
         print("""
         WARNING!!!
-        Be aware that the whole system will immediately shut down and stopping recording, \n
+        Be aware that the whole system will immediately shut down and stopping recording,
         Game won't reserve your current status or any records except those has been written in history.txt file.
         """)
-        if input("Confirm exit?").lower() in ["y", "yes"]:
-            print("Have a good day and see you next time! :)")
-            self.finalPrint()
+        if input("Confirm exit?[yes or no]\n").lower() in ["y", "yes"]:
+            print("\nHave a good day and see you next time! :)")
+            self.finalPrint(False, True)
         return
 
     def returnOpponent(self, oneSide: anim) -> list:

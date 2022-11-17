@@ -1,8 +1,3 @@
-import sys
-import os
-
-from Game.Model.Model import Model
-
 
 class View():
     """
@@ -29,7 +24,7 @@ class View():
         self.gameboard = """
                                     -ROUND NN-
         ________________________________________________________________
-        |        |        | -TRAP- | -NEST- | -TRAP- |        |        |
+        |        |        | -TRAP- | -DEN-  | -TRAP- |        |        |
         |  [08]  |  [18]  |  [28]  |  [38]  |  [48]  |  [58]  |  [68]  |
         |________|________|________|________|________|________|________|
         |        |        |        | -TRAP- |        |        |        |
@@ -53,7 +48,7 @@ class View():
         |        |        |        | -TRAP- |        |        |        |
         |  [01]  |  [11]  |  [21]  |  [31]  |  [41]  |  [51]  |  [61]  |
         |________|________|________|________|________|________|________|
-        |        |        | -TRAP- | -NEST- | -TRAP- |        |        |
+        |        |        | -TRAP- | -DEN-  | -TRAP- |        |        |
         |  [00]  |  [10]  |  [20]  |  [30]  |  [40]  |  [50]  |  [60]  |
         |________|________|________|________|________|________|________|
 
@@ -81,7 +76,7 @@ class View():
     return: None
     '''
 
-    def printChessboard(self, player1: list, player2: list):
+    def printChessboard(self, player1: list, player2: list, turnflag):
         _gameboard = self.gameboard
         for animal_i in player1:
             if not animal_i.status: continue
@@ -108,23 +103,23 @@ class View():
             repl_str = "[" + str(animal_i.position[0]) + \
                        str(animal_i.position[1]) + "]"
 
-            if (animal_i.rank == 7):
+            if animal_i.rank == 7:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.lion_str + '\033[0m')
-            elif (animal_i.rank == 8):
+            elif animal_i.rank == 8:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.elephant_str + '\033[0m')
-            elif (animal_i.rank == 2):
+            elif animal_i.rank == 2:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.cat_str + '\033[0m')
-            elif (animal_i.rank == 5):
+            elif animal_i.rank == 5:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.leopard_str + '\033[0m')
-            elif (animal_i.rank == 3):
+            elif animal_i.rank == 3:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.dog_str + '\033[0m')
-            elif (animal_i.rank == 6):
+            elif animal_i.rank == 6:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.tiger_str + '\033[0m')
-            elif (animal_i.rank == 4):
+            elif animal_i.rank == 4:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.wolf_str + '\033[0m')
             else:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.rat_str + '\033[0m')
-
+        _gameboard = _gameboard.replace("NN", str(turnflag))
         print(_gameboard)
 
     '''
@@ -166,15 +161,13 @@ class View():
     '''
 
     def printHints(self, hintNum):  # hintNum:
-        hintsList = [" Can't move to next step since it's out of chessboard range",  # Hint1
-                     " Can't move to next step since it's occupied by your side's animals",  # Hint2
-                     " Can't move to next step since it's occupied by higher rank enemy",  # Hint3
-                     " The rat can't move to next step since the square is occupied by enemy rat",  # Hint4
-                     " The elephant can't move to next step since the square is occupied by enemy rat",  # Hint5
-                     " Elephant(8), Leopard(5), Wolf(4), Dog(3), Cat(2) can't move into the river",  # Hint6
-                     " Lion(7), Tiger(6) can't move across the river since there is a rat in the river now",  # Hint7
-                     " Can't move to next step since it's your side's den ",  # Hint8
-                     " The animal can move to next step (successful hint)"]  # Hint9
+        hintsList = [" Can't move to next step! The position is occupied by other animals.",  # Hint1
+                     " Can't move to next step! You can't move to your side's den.",  # Hint2
+                     " Can't jump over the river! Because a rat in the river now.",  # Hint3
+                     " Can't jump! Only Tiger and Lion can jump. ",  # Hint4
+                     " Can't move into the river! Only rat can move into the river！",  # Hint5
+                     " Can't move to next step since it's out of chessboard range",  # Hint6
+                     ]
         print(hintsList[hintNum])
 
     '''
@@ -219,10 +212,9 @@ class View():
     return: None
     '''
 
-    def printGameResult(self, turnflag):
-
-        print("Player ", turnflag % 2 + 1, "wins the game!")
-        print("Total number of rounds: ", turnflag)
+    def printGameResult(self, turnflag, defeat: bool, Exit: bool):
+        if not Exit: print("\n", "down side" if not turnflag % 2 else "up side", "player wins the game!\n")
+        print("Total number of rounds: ", turnflag - 1 if defeat else turnflag)
 
 
 if __name__ == "__main__":

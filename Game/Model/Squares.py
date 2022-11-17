@@ -15,8 +15,6 @@ class Squares:
         self.river_position = [(1, 3), (1, 4), (1, 5), (2, 3), (2, 4),
                                (2, 5), (4, 3), (4, 4), (4, 5), (5, 3), (5, 4), (5, 5)]
 
-
-
     def get_den_position(self) -> list:
         # get den squares position, return a list of den position which is represented in tuple (x,y)
         return self.den_position
@@ -28,9 +26,6 @@ class Squares:
     def get_river_position(self) -> list:
         # get river squares position, return a list of river position which is represented in tuple (x,y)
         return self.river_position
-
-
-
 
 
 class Animals(Squares):
@@ -76,21 +71,19 @@ class Animals(Squares):
 
     def ifInTrap(self) -> bool:
         for i in self.trap_position:
-            if i==self.getPosition():
+            if i == self.getPosition():
                 return True
         return False
-
 
         # check whether an animal position is in trap
 
     def ifInLand(self) -> bool:
 
         for i in self.get_river_position():
-                if i==self.getPosition():
-                    return False
+            if i == self.getPosition():
+                return False
         return True
         # check whether an animal position is in land
-
 
     def ifInDen(self) -> bool:
         for i in self.get_den_position():
@@ -101,21 +94,20 @@ class Animals(Squares):
 
     def ifInRiver(self) -> bool:
         for i in self.get_river_position():
-                if i==self.getPosition():
-                    return True
+            if i == self.getPosition():
+                return True
         return False
         # check whether an animal position is in river
 
-
     def move(self, direction):
-        '''
+        """
         This function can be used only when ifCanMove() == True. The attribute of "position" of Animal instance will be changed after moving into next step in this function.
 
         The reason that we divide move() into 4 clear functions, is to make the programming more object-oriented.
 
         No return value of this function. Because the purpose of this func is to change the "position" attribute of an Animal instance.
 
-        '''
+        """
 
         try:
             if direction == "up":
@@ -156,19 +148,19 @@ class Animals(Squares):
 
     def upMove(self) -> None:
         (x, y) = self.position
-        self.position = (x, y+1)
+        self.position = (x, y + 1)
 
     def downMove(self) -> None:
         (x, y) = self.position
-        self.position = (x, y-1)
+        self.position = (x, y - 1)
 
     def leftMove(self) -> None:
         (x, y) = self.position
-        self.position = (x-1, y)
+        self.position = (x - 1, y)
 
     def rightMove(self) -> None:
         (x, y) = self.position
-        self.position = (x+1, y)
+        self.position = (x + 1, y)
 
     '''
     The 4 following functions (jumpOverUp(), jumpOverDown(), jumpOverLeft(), jumpOverRight()), are used in move().
@@ -178,22 +170,19 @@ class Animals(Squares):
 
     def jumpOverUp(self) -> None:
         (x, y) = self.position
-        self.position = (x, y+4)
-
+        self.position = (x, y + 4)
 
     def jumpOverDown(self) -> None:
         (x, y) = self.position
-        self.position = (x, y-4)
-
+        self.position = (x, y - 4)
 
     def jumpOverLeft(self) -> None:
         (x, y) = self.position
-        self.position = (x-3, y)
-
+        self.position = (x - 3, y)
 
     def jumpOverRight(self) -> None:
         (x, y) = self.position
-        self.position = (x+3, y)
+        self.position = (x + 3, y)
 
 
 if __name__ == "__main__":
