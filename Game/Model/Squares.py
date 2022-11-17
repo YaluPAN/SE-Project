@@ -1,13 +1,8 @@
-from operator import truediv
-from pickle import TRUE
-import typing
-from typing import List, Type, TypeVar
-
-
 class Squares:
-    '''
-    The class "Squares" is designed to represent static squares in a chessboard, including den squares, traps squares and river squares.
-    '''
+    """
+    The class "Squares" is designed to represent static squares in a chessboard, including den squares, traps squares
+    and river squares.
+    """
 
     def __init__(self):
         self.den_position = [(3, 0), (3, 8)]
@@ -42,6 +37,12 @@ class Animals(Squares):
         self.status = status
 
     def getRiverSide(self) -> str:
+        """
+        1. This function is used to get the riverside based on a specific square position. 2. Function parameter:
+        "square_position" is passed from get_new_estimated_position() in Model. 3. Return value: returns a str,
+        ether 'left' or 'right'. 4. How to achieve: by iterating all river squares position, and find which on is the
+        same as the "square_position"
+        """
         for i in self.river_position:
             if i == self.position:
                 (x, y) = i
@@ -53,12 +54,7 @@ class Animals(Squares):
 
         return 'no'
 
-        '''
-        1. This function is used to get the river side based on a specific square position.
-        2. Function parameter: "square_position" is passed from get_new_estimated_position() in Model.
-        3. Return value: returns a str, ether 'left' or 'right'.
-        4. How to achieve: by iterating all river squares position, and find which on is the same as the "square_position"
-        '''
+
 
     def change_status(self):
         self.status = False
@@ -101,11 +97,13 @@ class Animals(Squares):
 
     def move(self, direction):
         """
-        This function can be used only when ifCanMove() == True. The attribute of "position" of Animal instance will be changed after moving into next step in this function.
+        This function can be used only when ifCanMove() == True. The attribute of "position" of Animal instance will
+        be changed after moving into next step in this function.
 
         The reason that we divide move() into 4 clear functions, is to make the programming more object-oriented.
 
-        No return value of this function. Because the purpose of this func is to change the "position" attribute of an Animal instance.
+        No return value of this function. Because the purpose of this func is to change the "position" attribute of
+        an Animal instance.
 
         """
 
@@ -123,8 +121,8 @@ class Animals(Squares):
 
     def jumpOver(self, direction) -> None:
         '''
-        This function is used only when the animal is Lion or Tiger. As they can jump over the river to the opponent side. Lion/Tiger's attribute of "position" will change.
-        No return value of this func.
+        This function is used only when the animal is Lion or Tiger. As they can jump over the river to the opponent
+        side. Lion/Tiger's attribute of "position" will change. No return value of this func.
         '''
         try:
             if direction == "up":
