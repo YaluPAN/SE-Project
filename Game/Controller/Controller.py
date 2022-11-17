@@ -57,7 +57,7 @@ class Controller:
             return False
         return True
 
-    def processing(self) -> int:
+    def processing(self) -> None:
         """
         processor for commands (user input). A boolean flag of a player's turn will be received to judge whether it
         was the player's round. if move is selected, the function will check whether that was a legal move calling
@@ -80,28 +80,33 @@ class Controller:
                 return self.processing()
             direction, action = inputs[2], inputs[0]
             moving = self.gamer[matchers[inputs[1].lower()] - 1]
-            if self.ifEnd(moving, direction, action): self.finalPrint(False, False)
+            self.ifEnd(moving, direction, action)
             potential = self.game_model.ifCanMove(moving, direction, action)
             if not potential[0]:
                 self.game_view.printHints(potential[1] - 1)
                 return self.processing()
 
+            if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving, direction, action):
+                opponent: anim = self.game_model.get_same_position_enemy(moving, direction, action)
+                self.game_model.die(opponent)
+
             if inputs[0] == "move":
                 self.game_model.move(moving, direction)
+                if self.exit:
+                    self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList,
+                                                   self.turnFlag)
+                    self.finalPrint(False, False)
             elif inputs[0] == "jump":
                 self.game_model.jumpOver(moving, direction)
-            if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving, direction, action):
-                opponent: anim = self.game_model.get_same_position_enemy(moving)
-                self.game_model.die(opponent)
         elif inputs[0] == "help":
             self.game_view.printHelp()
+            return self.processing()
         elif inputs[0].lower() == "defeat":
             self.AdmitDefeat()
         elif inputs[0].lower() == "exit":
             self.Exit()
-            print("Bye~")
         else:
-            print("Hey player, please do not arbitrarily input, OK? you are playing game. please input again!")
+            print("Hey player, please do not arbitrarily input. Be cautious and please input again.")
             return self.processing()
 
     def finalPrint(self, defeat: bool, exit: bool):

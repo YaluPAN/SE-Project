@@ -19,21 +19,21 @@ class Model:
     def __init__(self):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
         downside_Rat = Animals("downside_Rat", 1, (6, 2), True)  # (6, 2)
-        downside_Cat = Animals("downside_Cat", 2, (1, 1), True)
+        downside_Cat = Animals("downside_Cat", 2, (1, 1), True)  # (1, 1)
         downside_Dog = Animals("downside_Dog", 3, (5, 1), True)
         downside_Wolf = Animals("downside_Wolf", 4, (2, 2), True)
         downside_Leopard = Animals("downside_Leopard", 5, (4, 2), True)
-        downside_Tiger = Animals("downside_Tiger", 6, (0, 0), True)
-        downside_Lion = Animals("downside_Lion", 7, (6, 0), True)
+        downside_Tiger = Animals("downside_Tiger", 6, (2, 0), True)  # (0, 0)
+        downside_Lion = Animals("downside_Lion", 7, (0, 5), False)
         downside_Elephant = Animals(
-            "downside_Elephant", 8, (0, 5), True)
+            "downside_Elephant", 8, (0, 2), True)
 
-        upside_Rat = Animals("upside_Rat", 1, (0, 6), True)
+        upside_Rat = Animals("upside_Rat", 1, (2, 1), True)  #(0, 6)
         upside_Cat = Animals("upside_Cat", 2, (5, 7), True)
         upside_Dog = Animals("upside_Dog", 3, (1, 7), True)
         upside_Wolf = Animals("upside_Wolf", 4, (4, 6), True)
         upside_Leopard = Animals("upside_Leopard", 5, (2, 6), True)
-        upside_Tiger = Animals("upside_Tiger", 6, (6, 3), True)  # (6, 8)
+        upside_Tiger = Animals("upside_Tiger", 6, (6, 8), True)  # (6, 8)
         upside_Lion = Animals("upside_Lion", 7, (0, 8), True)  # (0, 8)
         upside_Elephant = Animals("upside_Elephant", 8, (6, 6), True)
 
@@ -80,6 +80,7 @@ class Model:
         hint4 = 4
         hint5 = 5
         hint6 = 6
+        hint7 = 7
 
         """
         get the estimated new position of the animal. This position is NOT the real position of animals, 
@@ -88,6 +89,9 @@ class Model:
         estimated_new_position = self.get_estimated_new_position(
             moving_animal, direction, action)
         try:
+            if not moving_animal.status:
+                return False, hint7
+
             if self.if_move_out_of_range(estimated_new_position):
                 # hint6: Can't move to next step since it's out of chessboard range
                 return False, hint6
@@ -538,14 +542,15 @@ class Model:
                 "Error! Can't check whether the animal can eat enemy. Pls check "
                 "if_new_position_has_enemy_that_can_be_eaten()")
 
-    def get_same_position_enemy(self, moving_animal: Animals) -> 'Animals':
+    def get_same_position_enemy(self, moving_animal: Animals, direction: str, action: str) -> 'Animals':
+        new_position = self.get_estimated_new_position(moving_animal, direction, action)
         if moving_animal.name[0] == 'd':
             for i in self.upAnimalList:
-                if i.position == moving_animal.position:
+                if i.position == new_position:
                     return i
         else:
-            for i in self.upAnimalList:
-                if i.position == moving_animal.position:
+            for i in self.downAnimalList:
+                if i.position == new_position:
                     return i
 
         '''1. Purpose: This function is used only when if_new_position_has_enemy_that_can_be_eaten() is True. Because 
@@ -556,6 +561,7 @@ class Model:
 
     def die(self, dying_animal: Animals) -> None:
         dying_animal.change_status()
+        dying_animal.position = (-1, -1)
 
         '''
         1. Purpose: This function is used after found the enemy to be eaten. The enemy piece's attribute of "status" will change from True(live) to False(dead).
@@ -650,13 +656,13 @@ class Model:
         if moving_animal.name[0] == 'u':
             for i in self.downAnimalList:
                 if i.position == position:
-                    if i.rank == moving_animal.rank:
+                    if i.rank == moving_animal.rank or not i.status:
                         return True
             return False
         else:
             for i in self.upAnimalList:
                 if i.position == position:
-                    if i.rank == moving_animal.rank:
+                    if i.rank == moving_animal.rank or not i.status:
                         return True
             return False
 

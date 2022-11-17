@@ -11,6 +11,8 @@ class View():
     """
 
     def __init__(self):
+        self.turn: int = 1
+
         self.lion_str = "LION"
         self.wolf_str = "WOLF"
         self.rat_str = "RAT "
@@ -77,6 +79,8 @@ class View():
     '''
 
     def printChessboard(self, player1: list, player2: list, turnflag):
+        if not turnflag:
+            self.turn = 0
         _gameboard = self.gameboard
         for animal_i in player1:
             if not animal_i.status: continue
@@ -100,6 +104,7 @@ class View():
                 _gameboard = _gameboard.replace(repl_str, '\033[93m' + self.rat_str + '\033[0m')
 
         for animal_i in player2:
+            if not animal_i.status: continue
             repl_str = "[" + str(animal_i.position[0]) + \
                        str(animal_i.position[1]) + "]"
 
@@ -119,7 +124,7 @@ class View():
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.wolf_str + '\033[0m')
             else:
                 _gameboard = _gameboard.replace(repl_str, '\033[94m' + self.rat_str + '\033[0m')
-        _gameboard = _gameboard.replace("NN", str(turnflag))
+        _gameboard = _gameboard.replace("NN", str(turnflag if self.turn else turnflag + 1))
         print(_gameboard)
 
     '''
@@ -148,7 +153,7 @@ class View():
         |________|      |++++++++|      |________|      |________|
          L A N D        W A T E R        N E S T         T R A P
         """
-        option = input(helpMenu)
+        option = int(input(helpMenu))
         if (option == 1):
             print(rankInfo)
         elif (option == 2):
@@ -167,6 +172,7 @@ class View():
                      " Can't jump! Only Tiger and Lion can jump. ",  # Hint4
                      " Can't move into the river! Only rat can move into the river！",  # Hint5
                      " Can't move to next step since it's out of chessboard range",  # Hint6
+                     " Can't move! The piece is eliminated."  # hint 7
                      ]
         print(hintsList[hintNum])
 
@@ -214,7 +220,8 @@ class View():
 
     def printGameResult(self, turnflag, defeat: bool, Exit: bool):
         if not Exit: print("\n", "down side" if not turnflag % 2 else "up side", "player wins the game!\n")
-        print("Total number of rounds: ", turnflag - 1 if defeat else turnflag)
+        if defeat: turnflag -= 1
+        print("Total number of rounds: ", turnflag + (1 - self.turn))
 
 
 if __name__ == "__main__":
