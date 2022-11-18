@@ -1,7 +1,7 @@
 class Squares:
     """
-    The class "Squares" is designed to represent static squares in a chessboard, including den squares, traps squares
-    and river squares.
+        The class "Squares" is designed to represent static squares in a chessboard, including den squares, traps
+        squares and river squares.
     """
 
     def __init__(self):
@@ -24,10 +24,10 @@ class Squares:
 
 
 class Animals(Squares):
-    '''
-    The class "Squares" is designed to represent animals squares in a chessboard, including 8 types of animals.
-    The important attribute of the animals are: name, rank, position, and status(indicates they're live or dead)
-    '''
+    """
+        The class "Squares" is designed to represent animals squares in a chessboard, including 8 types of animals.
+        The important attribute of the animals are: name, rank, position, and status(indicates they're live or dead)
+    """
 
     def __init__(self, name, rank, position: tuple, status):
         super().__init__()
@@ -38,10 +38,10 @@ class Animals(Squares):
 
     def getRiverSide(self) -> str:
         """
-        1. This function is used to get the riverside based on a specific square position. 2. Function parameter:
-        "square_position" is passed from get_new_estimated_position() in Model. 3. Return value: returns a str,
-        ether 'left' or 'right'. 4. How to achieve: by iterating all river squares position, and find which on is the
-        same as the "square_position"
+            1. This function is used to get the riverside based on a specific square position. 2. Function parameter:
+            "square_position" is passed from get_new_estimated_position() in Model. 3. Return value: returns a str,
+            ether 'left' or 'right'. 4. How to achieve: by iterating all river squares position, and find which on is the
+            same as the "square_position"
         """
         for i in self.river_position:
             if i == self.position:
@@ -53,8 +53,6 @@ class Animals(Squares):
                     return 'right'
 
         return 'no'
-
-
 
     def change_status(self):
         self.status = False
@@ -97,13 +95,13 @@ class Animals(Squares):
 
     def move(self, direction):
         """
-        This function can be used only when ifCanMove() == True. The attribute of "position" of Animal instance will
-        be changed after moving into next step in this function.
+            This function can be used only when ifCanMove() == True. The attribute of "position" of Animal instance will
+            be changed after moving into next step in this function.
 
-        The reason that we divide move() into 4 clear functions, is to make the programming more object-oriented.
+            The reason that we divide move() into 4 clear functions, is to make the programming more object-oriented.
 
-        No return value of this function. Because the purpose of this func is to change the "position" attribute of
-        an Animal instance.
+            No return value of this function. Because the purpose of this func is to change the "position" attribute of
+            an Animal instance.
 
         """
 
@@ -120,10 +118,10 @@ class Animals(Squares):
             print("Error! The Animal's position can't change. Pls check move()")
 
     def jumpOver(self, direction) -> None:
-        '''
-        This function is used only when the animal is Lion or Tiger. As they can jump over the river to the opponent
-        side. Lion/Tiger's attribute of "position" will change. No return value of this func.
-        '''
+        """
+            This function is used only when the animal is Lion or Tiger. As they can jump over the river to the opponent
+            side. Lion/Tiger's attribute of "position" will change. No return value of this func.
+        """
         try:
             if direction == "up":
                 self.jumpOverUp()
@@ -138,11 +136,11 @@ class Animals(Squares):
 
             print("Error! The Animal's position can't change. Pls check jumpOver()")
 
-    '''
-    The 4 following functions (upMove(), downMove(), leftMove(), rightMove()), are used in move().
+    """
+        The 4 following functions (upMove(), downMove(), leftMove(), rightMove()), are used in move().
 
-    No return value of these function. Because the purpose of this func is to change the "position" attribute of an Animal instance.
-    '''
+        No return value of these function. Because the purpose of this func is to change the "position" attribute of an Animal instance.
+    """
 
     def upMove(self) -> None:
         (x, y) = self.position
@@ -160,11 +158,11 @@ class Animals(Squares):
         (x, y) = self.position
         self.position = (x + 1, y)
 
-    '''
-    The 4 following functions (jumpOverUp(), jumpOverDown(), jumpOverLeft(), jumpOverRight()), are used in move().
+    """
+        The 4 following functions (jumpOverUp(), jumpOverDown(), jumpOverLeft(), jumpOverRight()), are used in move().
 
-    No return value of these function. Because the purpose of this func is to change the "position" attribute of an Animal instance by changing the value of x or y in tuple of position.
-    '''
+        No return value of these function. Because the purpose of this func is to change the "position" attribute of an Animal instance by changing the value of x or y in tuple of position.
+    """
 
     def jumpOverUp(self) -> None:
         (x, y) = self.position
