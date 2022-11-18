@@ -18,8 +18,8 @@ matchers = {
 
 class Controller:
     """
-    initialization for objects of controller class
-    return: None
+        initialization for objects of controller class
+        return: None
     """
 
     def __init__(self, game_model: model.Model, game_view: View):
@@ -31,28 +31,30 @@ class Controller:
 
     def chooseSide(self) -> None:
         """
-        since the upside and downside layer were already be initialized, so we directly
-        modify turnFlag to decide who starts first
+            since the upside and downside layer were already be initialized, so we directly
+            modify turnFlag to decide who starts first
         """
-        inputs: str = input("Please choose your preferred side: ")
+        inputs: str = input("Please choose your preferred side (up/down): ")
         if inputs.lower() == "up":
             self.turnFlag = 1
         elif inputs.lower() == "down":
             self.turnFlag = 0
         else:
-            print("You input the wrong command, please input 'up' or 'down'. ")
+            print("\033[31mPlease input 'up' or 'down'.\033[0m")
             return self.chooseSide()
         return
 
     def executeInput(self) -> None:
         while not self.exit:
             self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList, self.turnFlag)
-            print("Now is", "down side" if not self.turnFlag % 2 else "up side", "player turn")
+            print("Now is", "\033[94mdownside\033[0m" if not self.turnFlag % 2 else "\033[93mupside\033[0m", "player's turn!")
             self.processing()
             self.turnFlag += 1
         self.finalPrint(False, False)
 
     def wordProcess(self, inputs: list) -> bool:
+        if len(inputs) < 3:
+            return False
         if inputs[1].lower() not in matchers.keys() or inputs[2].lower() not in ["left", "right", "up", "down"]:
             return False
         return True
@@ -73,10 +75,13 @@ class Controller:
             self.gamer = self.game_model.upAnimalList
 
         inputs: list = input(
-            "Please input your commands: ").split()
+            "Please input your command (move/jump/help/defeat/exit): ").split()
+        if not len(inputs):
+            print("\033[31mCommand cannot be empty.\033[0m")
+            return self.processing()
         if inputs[0] == "move" or inputs[0] == "jump":
             if not self.wordProcess(inputs):
-                print("Please correctly spell the words.")
+                print("\033[31mPlease spell the full name of the chess correctly (e.g. 'tiger for TIGE').\033[0m")
                 return self.processing()
             direction, action = inputs[2], inputs[0]
             moving = self.gamer[matchers[inputs[1].lower()] - 1]
@@ -92,6 +97,7 @@ class Controller:
 
             if inputs[0] == "move":
                 self.game_model.move(moving, direction)
+                self.ifEnd(moving, direction, action)
                 if self.exit:
                     self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList,
                                                    self.turnFlag)
@@ -103,10 +109,12 @@ class Controller:
             return self.processing()
         elif inputs[0].lower() == "defeat":
             self.AdmitDefeat()
+            return self.processing()
         elif inputs[0].lower() == "exit":
             self.Exit()
+            return self.processing()
         else:
-            print("Hey player, please do not arbitrarily input. Be cautious and please input again.")
+            print("\033[31mCommand not found. Please check your input carefully.\033[0m")
             return self.processing()
 
     def finalPrint(self, defeat: bool, exit: bool):
@@ -115,10 +123,10 @@ class Controller:
 
     def AdmitDefeat(self):
         """
-        function to handle the user's surrender request.
-        return: a boolean variable.
+            function to handle the user's surrender request.
+            return: a boolean variable.
         """
-        if input("\nyou will admit your defeat and surrender to your opponent, please confirm again:\n ").lower() in [
+        if input("\nYou will admit your defeat and surrender to your opponent. Please confirm again (yes/no):\n ").lower() in [
             "y", "yes"]:
             self.turnFlag += 1
             self.finalPrint(True, False)
@@ -126,22 +134,21 @@ class Controller:
 
     def Exit(self):
         """
-        Function to exit the game after having the players' final confirmation.
-        return: None
+            Function to exit the game after having the players' final confirmation.
+            return: None
         """
         print("""
-        WARNING!!!
-        Be aware that the whole system will immediately shut down and stopping recording,
-        Game won't reserve your current status or any records except those has been written in history.txt file.
+        \033[31m-WARNING!!!-\033[0m
+        Be aware that the whole game will be terminated without saving the current chessboard!
         """)
-        if input("Confirm exit?[yes or no]\n").lower() in ["y", "yes"]:
+        if input("Confirm your exit? (yes/no):\n").lower() in ["y", "yes"]:
             print("\nHave a good day and see you next time! :)")
             self.finalPrint(False, True)
         return
 
     def returnOpponent(self, oneSide: anim) -> list:
         """
-        return: a boolean variable judging whether the game ends.
+            return: a boolean variable judging whether the game ends.
         """
         if oneSide.name[0:2].lower() == "up":
             return self.game_model.downAnimalList
@@ -150,7 +157,7 @@ class Controller:
 
     def all_dead(self, moving) -> bool:
         """
-        Check whether one side of animals are dead
+            Check whether one side of animals are dead
         """
 
         opponent = self.returnOpponent(moving)
@@ -161,8 +168,8 @@ class Controller:
 
     def ifEnd(self, moving: anim, direction: str, action: str) -> None:
         """
-        1. in den
-        2. in side all dead
+            1. in den
+            2. in side all dead
         """
         if self.game_model.if_in_opposite_den(moving, direction, action):
             self.exit = True
