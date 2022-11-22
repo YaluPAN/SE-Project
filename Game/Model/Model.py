@@ -18,15 +18,15 @@ class Model:
     # initialize a new Chessboard
     def __init__(self):
         # def _init_(self, name, rank, position: tuple(), inTrap,  status):
-        downside_Rat = Animals("downside_Rat", 1, (6, 2), True)  # (6, 2)
-        downside_Cat = Animals("downside_Cat", 2, (1, 1), True)  # (1, 1)
-        downside_Dog = Animals("downside_Dog", 3, (5, 1), True)
-        downside_Wolf = Animals("downside_Wolf", 4, (2, 2), True)
-        downside_Leopard = Animals("downside_Leopard", 5, (4, 2), True)
-        downside_Tiger = Animals("downside_Tiger", 6, (0, 0), True)  # (0, 0)
-        downside_Lion = Animals("downside_Lion", 7, (6, 0), True)
+        downside_Rat = Animals("downside_Rat", 1, (0, 5), True)  # (6, 2)
+        downside_Cat = Animals("downside_Cat", 2, (1, 1), False)  # (1, 1)
+        downside_Dog = Animals("downside_Dog", 3, (5, 1), False)
+        downside_Wolf = Animals("downside_Wolf", 4, (2, 2), False)
+        downside_Leopard = Animals("downside_Leopard", 5, (4, 2), False)
+        downside_Tiger = Animals("downside_Tiger", 6, (0, 0), False)  # (0, 0)
+        downside_Lion = Animals("downside_Lion", 7, (6, 0), False)
         downside_Elephant = Animals(
-            "downside_Elephant", 8, (0, 2), True)
+            "downside_Elephant", 8, (0, 2), False)
 
         upside_Rat = Animals("upside_Rat", 1, (0, 6), True)  # (0, 6)
         upside_Cat = Animals("upside_Cat", 2, (5, 7), True)

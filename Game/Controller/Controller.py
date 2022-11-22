@@ -79,12 +79,13 @@ class Controller:
         if not len(inputs):
             print("\033[31mCommand cannot be empty.\033[0m")
             return self.processing()
-        if inputs[0] == "move" or inputs[0] == "jump":
+        action = inputs[0]
+        if action == "move" or action == "jump":
             if not self.wordProcess(inputs):
                 print("\033[31mPlease spell the full name of the chess correctly (e.g. 'tiger for TIGE').\033[0m")
                 return self.processing()
-            direction, action = inputs[2], inputs[0]
-            moving = self.gamer[matchers[inputs[1].lower()] - 1]
+            direction, animal = inputs[2], inputs[1]
+            moving = self.gamer[matchers[animal.lower()] - 1]
             self.ifEnd(moving, direction, action)
             potential = self.game_model.ifCanMove(moving, direction, action)
             if not potential[0]:
@@ -94,16 +95,16 @@ class Controller:
             if self.game_model.if_new_position_has_enemy_that_can_be_eaten(moving, direction, action):
                 opponent: anim = self.game_model.get_same_position_enemy(moving, direction, action)
                 self.game_model.die(opponent)
-
             if inputs[0] == "move":
                 self.game_model.move(moving, direction)
-                self.ifEnd(moving, direction, action)
-                if self.exit:
-                    self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList,
-                                                   self.turnFlag)
-                    self.finalPrint(False, False)
             elif inputs[0] == "jump":
                 self.game_model.jumpOver(moving, direction)
+            if self.all_dead(moving):
+                self.exit = True
+            if self.exit:
+                self.game_view.printChessboard(self.game_model.upAnimalList, self.game_model.downAnimalList,
+                                               self.turnFlag)
+                self.finalPrint(False, False)
         elif inputs[0] == "help":
             self.game_view.printHelp()
             return self.processing()
