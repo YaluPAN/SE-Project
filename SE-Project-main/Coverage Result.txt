@@ -1,0 +1,22 @@
+Be advised that all codes are run by Pycharm
+
+And coverage is tested by python library coverage.
+Kindly remind that this package will list out all the invoked python file, so 
+if you are going to use the package to check our coverage, please ignore irrelvant files and only
+focus on Model or Square
+
+we have also provided the Zipped coverage folder.
+You can click "index.html" to see more details after unzip it
+
+Model_test.py
+
+Module statements missing excluded	coverage
+Game\Model\Model.py	402	40	0	90%
+Game\Model\Test\Model_test.py	424	8	0	98%
+
+Square_test.py
+
+Module statements missing excluded	coverage
+Game\Model\Squares.py	102	7	0	93%
+Game\Model\Test\Square_test.py	198	1	0	99%
+Total	300	8	0	97%
